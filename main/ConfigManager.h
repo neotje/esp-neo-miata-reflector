@@ -1,0 +1,6 @@
+#ifndef CONFIGMANAGER_H
+#define CONFIGMANAGER_H
+
+
+
+#endif // CONFIGMANAGER_H

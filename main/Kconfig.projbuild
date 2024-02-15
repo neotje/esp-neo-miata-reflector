@@ -1,0 +1,31 @@
+menu "esp-neo-miata-reflector"
+    
+    orsource "$IDF_PATH/examples/common_components/env_caps/$IDF_TARGET/Kconfig.env_caps"
+
+    config BOARD_LED_PIN
+        int "LED pin"
+        range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
+        default 4
+    
+    config BOARD_LED_STRIP_PIN
+        int "LED strip pin"
+        range ENV_GPIO_RANGE_MIN ENV_GPIO_OUT_RANGE_MAX
+        default 5
+        help 
+            The pin number of the LED strip data line.
+    
+    config BOARD_SENS1_PIN
+        int "Sensor 1 pin"
+        range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
+        default 6
+        help 
+            The pin number of the first voltage sensor.
+
+    config BOARD_SENS2_PIN
+        int "Sensor 2 pin"
+        range ENV_GPIO_RANGE_MIN ENV_GPIO_IN_RANGE_MAX
+        default 7
+        help 
+            The pin number of the second voltage sensor.
+
+endmenu

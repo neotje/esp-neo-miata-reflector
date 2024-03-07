@@ -2,9 +2,10 @@
 
 enmr_marker_mode_t IDLE_MODE = {
     .name = "Idle Mode",
+    .mode_function = NULL,
     .config = {
         .brightness = 0,
-        .priority = 0,
+        .priority = IDLE_MODE_PRIORITY,
         .enter_event_ids = NULL,
         .enter_event_ids_count = 0,
         .exit_event_ids = NULL,
@@ -15,6 +16,7 @@ enmr_marker_mode_t IDLE_MODE = {
 
 enmr_marker_mode_t DAYTIME_MODE = {
     .name = "Daytime Mode",
+    .mode_function = NULL,
     .config = {
         .brightness = 100,
         .priority = 1,
@@ -28,6 +30,7 @@ enmr_marker_mode_t DAYTIME_MODE = {
 
 enmr_marker_mode_t BLINKING_MODE = {
     .name = "Blinking Mode",
+    .mode_function = NULL,
     .config = {
         .brightness = 100,
         .priority = 2,
@@ -39,13 +42,13 @@ enmr_marker_mode_t BLINKING_MODE = {
     .state = {},
 };
 
-enmr_marker_mode_t *MARKER_MODES[] = {
+enmr_marker_mode_t *g_marker_modes[] = {
     &IDLE_MODE,
     &DAYTIME_MODE,
     &BLINKING_MODE,
 };
 
-const size_t MARKER_MODES_COUNT = sizeof(MARKER_MODES) / sizeof(enmr_marker_mode_t *);
+const size_t MARKER_MODES_COUNT = sizeof(g_marker_modes) / sizeof(enmr_marker_mode_t *);
 
 esp_err_t marker_mode_add_event(int32_t event_id, enmr_marker_mode_t *mode, enmr_marker_mode_event_t event_t)
 {

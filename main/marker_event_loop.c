@@ -11,7 +11,6 @@ ESP_EVENT_DEFINE_BASE(MARKER_EVENT);
 
 static void event_loop_task(void* arg)
 {
-    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     ESP_LOGI(TAG, "Event loop task started");
 
     while (1)
@@ -23,18 +22,18 @@ static void event_loop_task(void* arg)
 
 esp_err_t marker_event_loop_init()
 {
-    esp_event_loop_args_t marker_event_loop_args = {
+    /* esp_event_loop_args_t marker_event_loop_args = {
         .queue_size = 10,
         .task_name = "marker_event_loop",
         .task_stack_size = 3072,
-        .task_priority = uxTaskPriorityGet(NULL),
+        .task_priority = uxTaskPriorityGet(NULL) + CONFIG_MARKER_EVENT_LOOP_TASK_PRIORITY,
         .task_core_id = tskNO_AFFINITY
-    };
+    }; */
 
-    /* esp_event_loop_args_t marker_event_loop_args = {
+    esp_event_loop_args_t marker_event_loop_args = {
         .queue_size = 10,
         .task_name = NULL
-    }; */
+    };
 
     ESP_RETURN_ON_ERROR(esp_event_loop_create(&marker_event_loop_args, &marker_event_loop), TAG, "Failed to create marker event loop");
 
@@ -42,7 +41,7 @@ esp_err_t marker_event_loop_init()
 
     ESP_LOGI(TAG, "Starting event loop task");
 
-    xTaskCreate(event_loop_task, "event_loop_task", 3072, NULL, 1, &event_loop_task_handle);
+    xTaskCreate(event_loop_task, "event_loop_task", 3072, NULL, uxTaskPriorityGet(NULL) + CONFIG_MARKER_EVENT_LOOP_TASK_PRIORITY, &event_loop_task_handle);
 
     return ESP_OK;
 }

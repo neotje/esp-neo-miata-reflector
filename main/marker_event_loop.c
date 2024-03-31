@@ -35,12 +35,12 @@ esp_err_t marker_event_loop_init()
         .task_name = NULL
     };
 
+    // create events loop for marker events loops.
     ESP_RETURN_ON_ERROR(esp_event_loop_create(&marker_event_loop_args, &marker_event_loop), TAG, "Failed to create marker event loop");
-
     ESP_LOGI(TAG, "Marker event loop created");
 
+    // start task for event loop. event loop generates events by calling underlying event sources.
     ESP_LOGI(TAG, "Starting event loop task");
-
     xTaskCreate(event_loop_task, "event_loop_task", 3072, NULL, uxTaskPriorityGet(NULL) + CONFIG_MARKER_EVENT_LOOP_TASK_PRIORITY, &event_loop_task_handle);
 
     return ESP_OK;

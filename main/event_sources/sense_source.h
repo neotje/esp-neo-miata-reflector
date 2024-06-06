@@ -7,11 +7,10 @@
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"
-
-typedef struct {
-
-
-} sense_source_pin_t;
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "marker_event_loop.h"
+#include "../fs.h"
 
 esp_err_t sense_source_init();
 

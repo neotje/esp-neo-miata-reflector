@@ -53,5 +53,12 @@ menu "esp-neo-miata-reflector"
             default 1
             help 
                 The priority of the mode stack task.
+
+        config CONFIG_MANAGER_TASK_PRIORITY
+            int "Config manager event loop task priority"
+            range 0 10
+            default 3
+            help 
+                The priority of the config manager task.
     endmenu
 endmenu

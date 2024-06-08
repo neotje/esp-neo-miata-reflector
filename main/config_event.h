@@ -1,0 +1,12 @@
+#ifndef CONFIG_EVENT_H
+#define CONFIG_EVENT_H
+
+#include "esp_event.h"
+
+ESP_EVENT_DECLARE_BASE(CONFIG_MANAGER_EVENT);
+
+enum {
+    CONFIG_MANAGER_EVENT_UPDATE,
+};
+
+#endif  // CONFIG_EVENT_H

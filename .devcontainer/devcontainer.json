@@ -25,7 +25,8 @@
 			},
 			"extensions": [
 				"espressif.esp-idf-extension",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"cschlosser.doxdocgen"
 			],
 		},
 		"codespaces": {
@@ -39,7 +40,8 @@
 			},
 			"extensions": [
 				"espressif.esp-idf-extension",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"cschlosser.doxdocgen"
 			],
 		}
 	},

@@ -205,6 +205,6 @@ void enmr_mode_stack_manager_print()
 
     for (size_t i = 0; i < state->stack_size; i++)
     {
-        ESP_LOGI(TAG, "Mode %d: %s", i, state->stack[i]->name);
+        ESP_LOGI(TAG, "Mode %d: %s", (int)i, state->stack[i]->name);
     }
 }

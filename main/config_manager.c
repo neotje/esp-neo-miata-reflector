@@ -9,7 +9,7 @@ static const char* TAG = "config_manager";
 
 esp_event_loop_handle_t config_manager_event_loop;
 
-esp_err_t trigger_update_event(const char* namespace, const char* key) {
+esp_err_t config_trigger_update_event(const char* namespace, const char* key) {
     config_manager_event_update_t event_data = {
         .namespace = namespace,
         .key = key
@@ -74,7 +74,7 @@ esp_err_t config_manager_set_u8(const char *namespace, const char *key, uint8_t 
 
     nvs_close(handle);
 
-    err = trigger_update_event(namespace, key);
+    err = config_trigger_update_event(namespace, key);
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to trigger update event");
 
     return ESP_OK;
@@ -110,7 +110,7 @@ esp_err_t config_manager_set_u16(const char *namespace, const char *key, uint16_
 
     nvs_close(handle);
 
-    err = trigger_update_event(namespace, key);
+    err = config_trigger_update_event(namespace, key);
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to trigger update event");
 
     return ESP_OK;
@@ -146,7 +146,7 @@ esp_err_t config_manager_set_i32(const char *namespace, const char *key, int32_t
 
     nvs_close(handle);
 
-    err = trigger_update_event(namespace, key);
+    err = config_trigger_update_event(namespace, key);
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to trigger update event");
 
     return ESP_OK;
@@ -182,7 +182,7 @@ esp_err_t config_manager_set_blob(const char *namespace, const char *key, const 
 
     nvs_close(handle);
 
-    err = trigger_update_event(namespace, key);
+    err = config_trigger_update_event(namespace, key);
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to trigger update event");
 
     return ESP_OK;

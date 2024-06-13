@@ -12,7 +12,7 @@ size_t state_entries_size = 0;
 
 esp_event_loop_handle_t state_manager_event_loop;
 
-esp_err_t trigger_update_event(const char *key)
+esp_err_t state_trigger_update_event(const char *key)
 {
     return esp_event_post_to(state_manager_event_loop, STATE_MANAGER_EVENT, STATE_MANAGER_EVENT_UPDATE, (void *)key, strlen(key), portMAX_DELAY);
 }
@@ -74,7 +74,7 @@ esp_err_t state_manager_set(const char *key, void *value, size_t size)
         memcpy(entry->value, value, size);
         entry->size = size;
 
-        ESP_RETURN_ON_ERROR(trigger_update_event(key), TAG, "Failed to trigger update event");
+        ESP_RETURN_ON_ERROR(state_trigger_update_event(key), TAG, "Failed to trigger update event");
 
         return ESP_OK;
     }
@@ -113,7 +113,7 @@ esp_err_t state_manager_set(const char *key, void *value, size_t size)
 
     state_entries_size++;
 
-    ESP_RETURN_ON_ERROR(trigger_update_event(key), TAG, "Failed to trigger update event");
+    ESP_RETURN_ON_ERROR(state_trigger_update_event(key), TAG, "Failed to trigger update event");
 
     return ESP_OK;
 }

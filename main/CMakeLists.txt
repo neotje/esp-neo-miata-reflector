@@ -1,4 +1,8 @@
-idf_component_register(SRCS "marker_event_loop.c" "marker_mode.c" "mode_stack_manager.c" "main.c" "event_sources/sense_source.c" "config_manager.c"
+file(GLOB marker_SRC
+     "*.c"
+)
+
+idf_component_register(SRCS ${marker_SRC}
                     INCLUDE_DIRS ".")
 
 

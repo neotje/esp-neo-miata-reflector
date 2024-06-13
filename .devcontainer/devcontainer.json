@@ -26,7 +26,8 @@
 			"extensions": [
 				"espressif.esp-idf-extension",
 				"GitHub.copilot",
-				"cschlosser.doxdocgen"
+				"cschlosser.doxdocgen",
+				"ms-vscode.cpptools-extension-pack"
 			],
 		},
 		"codespaces": {
@@ -41,7 +42,8 @@
 			"extensions": [
 				"espressif.esp-idf-extension",
 				"GitHub.copilot",
-				"cschlosser.doxdocgen"
+				"cschlosser.doxdocgen",
+				"ms-vscode.cpptools-extension-pack"
 			],
 		}
 	},

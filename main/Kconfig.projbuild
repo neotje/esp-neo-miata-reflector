@@ -76,5 +76,12 @@ menu "esp-neo-miata-reflector"
                 help 
                     The size of the state manager event loop stack.
         endmenu
+
+        config CONFIG_MANAGER_TASK_PRIORITY
+            int "Config manager event loop task priority"
+            range 0 10
+            default 3
+            help 
+                The priority of the config manager task.
     endmenu
 endmenu

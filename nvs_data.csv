@@ -18,5 +18,5 @@ blinkerSource,namespace,,
 sense,data,u8,1
 interval,data,u16,500
 sense,namespace,,
-threshold1,data,u32,100
-threshold2,data,u32,100
+threshold1,data,i32,100
+threshold2,data,i32,100

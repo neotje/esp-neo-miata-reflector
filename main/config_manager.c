@@ -5,7 +5,7 @@ ESP_EVENT_DEFINE_BASE(CONFIG_MANAGER_EVENT);
 /*
 PRIVATE
 */
-static const char* TAG = "fs";
+static const char* TAG = "config_manager";
 
 esp_event_loop_handle_t config_manager_event_loop;
 
@@ -44,10 +44,10 @@ esp_err_t config_manager_init() {
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to initialize NVS flash");
 
     esp_event_loop_args_t event_loop_args = {
-        .queue_size = 5,
+        .queue_size = CONFIG_CONFIG_MANAGER_EVENT_QUEUE_SIZE,
         .task_name = "config_manager_event_loop",
-        .task_priority = uxTaskPriorityGet(NULL) + CONFIG_CONFIG_MANAGER_TASK_PRIORITY,
-        .task_stack_size = 4 * 1024,
+        .task_priority = uxTaskPriorityGet(NULL) + CONFIG_CONFIG_MANAGER_EVENT_LOOP_PRIORITY,
+        .task_stack_size = CONFIG_CONFIG_MANAGER_EVENT_LOOP_STACK_SIZE,
         .task_core_id = tskNO_AFFINITY
     };
 

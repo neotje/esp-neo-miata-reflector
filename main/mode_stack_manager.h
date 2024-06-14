@@ -11,71 +11,31 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-#include "marker_mode.h"
+#include "state_manager.h"
 
-/*
-    enmr_marker_mode_t idle_mode = MARKER_MODE_INIT_IDLE_MODE();
-
-    enmr_marker_mode_config_t daytime_mode_config = {
-        .brightness = 100,
-        .priority = 1,
-    };
-    enmr_marker_mode_t daytime_mode = {
-        .name = "Daytime Mode",
-        .config = &daytime_mode_config,
-        .state = NULL,
-    };
-
-    enmr_marker_mode_config_t blinker_mode_config = {
-        .brightness = 100,
-        .priority = 2,
-    };
-    enmr_marker_mode_t blinker_mode = {
-        .name = "Blinker Mode",
-        .config = &blinker_mode_config,
-        .state = NULL,
-    };
-
-    enmr_mode_stack_manager_config_t mode_stack_manager_config = {
-        .idle_mode = &idle_mode,
-    };
-
-    ESP_ERROR_CHECK(enmr_mode_stack_manager_init(&mode_stack_manager_config));
-
-    enmr_mode_stack_manager_print();
-
-    ESP_ERROR_CHECK(enmr_mode_stack_manager_enter(&daytime_mode));
-    enmr_mode_stack_manager_print();
-
-    ESP_ERROR_CHECK(enmr_mode_stack_manager_enter(&blinker_mode));
-    enmr_mode_stack_manager_print();
-
-    ESP_ERROR_CHECK(enmr_mode_stack_manager_exit(&daytime_mode));
-    enmr_mode_stack_manager_print();
-
-    ESP_ERROR_CHECK(enmr_mode_stack_manager_enter(&daytime_mode));
-    enmr_mode_stack_manager_print();
-*/
+typedef void (* mode_function_t)( /* void * */ );
 
 typedef struct {
-    size_t stack_size;
-    enmr_marker_mode_t** stack;
-} enmr_mode_stack_manager_state_t;
+    uint8_t id; // unique id
+	const char* name;
 
-typedef struct {
-    enmr_marker_mode_t* idle_mode;
-} enmr_mode_stack_manager_config_t;
+    uint8_t priority;
+	
+	mode_function_t mode_enter_func;
+	mode_function_t mode_function;
+	mode_function_t mode_exit_func;
+} stack_manager_mode_t;
 
-esp_err_t enmr_mode_stack_manager_init(enmr_mode_stack_manager_config_t* cnf);
+esp_err_t mode_stack_manager_init();
 
-esp_err_t enmr_mode_stack_manager_enter(enmr_marker_mode_t* mode);
+esp_err_t mode_stack_manager_add_mode(stack_manager_mode_t* mode);
 
-esp_err_t enmr_mode_stack_manager_exit(enmr_marker_mode_t* mode);
+esp_err_t mode_stack_manager_enter_mode(uint8_t id);
 
-esp_err_t enmr_mode_stack_manager_sort();
+esp_err_t mode_stack_manager_exit_mode(uint8_t id);
 
-enmr_marker_mode_t* enmr_mode_stack_manager_get_current_mode();
+esp_err_t mode_stack_manager_get_current_mode();
 
-void enmr_mode_stack_manager_print();
+esp_err_t mode_stack_manager_get_mode(uint8_t id, stack_manager_mode_t** mode);
 
 #endif //MODESTACKMANAGER_H

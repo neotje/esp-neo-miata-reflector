@@ -47,12 +47,23 @@ menu "esp-neo-miata-reflector"
             help 
                 The priority of the marker event loop task.
 
-        config MODE_STACK_TASK_PRIORITY
-            int "Mode stack task priority"
-            range 0 10
-            default 1
-            help 
-                The priority of the mode stack task.
+        
+
+        menu "mode stack manager"
+            config MODE_STACK_MANAGER_TASK_PRIORITY
+                int "Mode stack task priority"
+                range 0 10
+                default 1
+                help 
+                    The priority of the mode stack task.
+            
+            config MODE_STACK_MANAGER_TASK_STACK_SIZE
+                int "Mode stack task stack size"
+                range 512 8192
+                default 4096
+                help 
+                    The size of the mode stack task stack.
+        endmenu
 
         menu "state manager"
             config STATE_MANAGER_EVENT_LOOP_PRIORITY

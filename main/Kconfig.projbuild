@@ -29,15 +29,6 @@ menu "esp-neo-miata-reflector"
             help 
                 The pin number of the second voltage sensor.
     endmenu
-    
-    menu "mode stack"
-        config MODE_LOOP_DELAY
-            int "Mode loop delay"
-            range 0 10000
-            default 16
-            help 
-                The delay between mode update calls in milliseconds.
-    endmenu
 
     menu "tasks"
         config MARKER_EVENT_LOOP_TASK_PRIORITY

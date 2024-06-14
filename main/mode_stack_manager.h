@@ -13,6 +13,8 @@
 
 #include "state_manager.h"
 
+#define IDLE_MODE_PRIORITY 0
+
 typedef void (* mode_function_t)( /* void * */ );
 
 typedef struct {
@@ -26,7 +28,7 @@ typedef struct {
 	mode_function_t mode_exit_func;
 } stack_manager_mode_t;
 
-esp_err_t mode_stack_manager_init();
+esp_err_t mode_stack_manager_init(stack_manager_mode_t* idle_mode);
 
 esp_err_t mode_stack_manager_add_mode(stack_manager_mode_t* mode);
 
@@ -34,8 +36,10 @@ esp_err_t mode_stack_manager_enter_mode(uint8_t id);
 
 esp_err_t mode_stack_manager_exit_mode(uint8_t id);
 
-esp_err_t mode_stack_manager_get_current_mode();
+esp_err_t mode_stack_manager_get_current_mode(stack_manager_mode_t** mode);
 
 esp_err_t mode_stack_manager_get_mode(uint8_t id, stack_manager_mode_t** mode);
+
+void mode_stack_manager_print_stack();
 
 #endif //MODESTACKMANAGER_H

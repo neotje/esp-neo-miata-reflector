@@ -188,14 +188,14 @@ esp_err_t config_manager_set_blob(const char *namespace, const char *key, const 
     return ESP_OK;
 }
 
-esp_err_t config_manager_get_blob(const char *namespace, const char *key, void *out, size_t size)
+esp_err_t config_manager_get_blob(const char *namespace, const char *key, void *out, size_t *size)
 {
     nvs_handle_t handle;
 
     esp_err_t err = nvs_open(namespace, NVS_READONLY, &handle);
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to open namespace");
 
-    err = nvs_get_blob(handle, key, out, &size);
+    err = nvs_get_blob(handle, key, out, size);
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to get value");
 
     nvs_close(handle);

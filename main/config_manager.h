@@ -103,7 +103,7 @@ esp_err_t config_manager_set_blob(const char *namespace, const char *key, const 
  * @param size size of binary data
  * @return esp_err_t 
  */
-esp_err_t config_manager_get_blob(const char *namespace, const char *key, void *out, size_t size);
+esp_err_t config_manager_get_blob(const char *namespace, const char *key, void *out, size_t *size);
 
 /**
  * @brief add event handler to listen for updates

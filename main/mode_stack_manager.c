@@ -3,7 +3,7 @@
 /*
 PRIVATE
 */
-static const char *TAG = "ModeStackManager";
+static const char *TAG = "mode_stack_manager";
 
 stack_manager_mode_t** available_modes = NULL;
 size_t available_modes_count = 0;

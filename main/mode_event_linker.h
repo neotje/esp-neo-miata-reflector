@@ -49,4 +49,6 @@ esp_err_t mode_event_linker_remove(uint8_t mode_id, int32_t event_id, mode_event
 
 esp_err_t mode_event_linker_post(int32_t event_id, const void* event_data, size_t event_data_size);
 
+void mode_event_linker_print();
+
 #endif

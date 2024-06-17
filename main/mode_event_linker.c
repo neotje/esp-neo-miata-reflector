@@ -203,3 +203,13 @@ esp_err_t mode_event_linker_post(int32_t event_id, const void *event_data, size_
     // Post the event
     return esp_event_post_to(mode_event_linker_event_loop, MODE_EVENT, event_id, event_data, event_data_size, portMAX_DELAY);
 }
+
+void mode_event_linker_print()
+{
+    ESP_LOGI(TAG, "Mode event links:");
+
+    for (uint32_t i = 0; i < mode_event_links_count; i++)
+    {
+        ESP_LOGI(TAG, "Mode %d, Event %d, Action %d", (int)mode_event_links[i].mode_id, (int)mode_event_links[i].event_id, (int)mode_event_links[i].action);
+    }
+}

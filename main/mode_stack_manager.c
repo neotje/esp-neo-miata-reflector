@@ -221,7 +221,7 @@ esp_err_t mode_stack_manager_get_mode(uint8_t id, stack_manager_mode_t** mode)
     {
         if (available_modes[i]->id == id)
         {
-            *mode = available_modes[i];
+            if (mode != NULL) *mode = available_modes[i];
             return ESP_OK;
         }
     }

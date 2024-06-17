@@ -1,9 +1,10 @@
 key,type,encoding,value
+modeEventLinker,namespace,,
+links,data,hex2bin,00
 blinkerMode,namespace,,
 enter,data,hex2bin,06
 exit,data,hex2bin,07
 brightness,data,u8,255
-priority,data,u8,2
 colors,data,hex2bin,00d05d28
 style,data,u8,1
 intervalMode,data,u8,1
@@ -12,7 +13,6 @@ runningMode,namespace,,
 enter,data,hex2bin,04
 exit,data,hex2bin,05
 brightness,data,u8,255
-priority,data,u8,1
 colors,data,hex2bin,00ffffff
 blinkerSource,namespace,,
 sense,data,u8,1

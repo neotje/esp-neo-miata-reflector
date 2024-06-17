@@ -1,9 +1,9 @@
-#ifndef MARKER_EVENT_H
-#define MARKER_EVENT_H
+#ifndef MODE_EVENT_H
+#define MODE_EVENT_H
 
 #include "esp_event.h"
 
-ESP_EVENT_DECLARE_BASE(MARKER_EVENT);
+ESP_EVENT_DECLARE_BASE(MODE_EVENT);
 
 enum {
     MARKER_EVENT_SENSE1_ON,
@@ -16,4 +16,4 @@ enum {
     MARKER_EVENT_TURN_SIGNAL_OFF,
 };
 
-#endif  // MARKER_EVENT_H
+#endif

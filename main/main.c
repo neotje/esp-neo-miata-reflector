@@ -5,6 +5,7 @@
 #include "config_manager.h"
 #include "state_manager.h"
 #include "mode_stack_manager.h"
+#include "mode_event_linker.h"
 
 static const char* TAG = "marker_app_main";
 
@@ -21,6 +22,8 @@ void app_main(void)
     ESP_ERROR_CHECK(state_manager_init());
 
     ESP_ERROR_CHECK(mode_stack_manager_init(&idle_mode));
+
+    ESP_ERROR_CHECK(mode_event_linker_init());
 
     while (1)
     {

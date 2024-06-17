@@ -12,6 +12,8 @@ uint32_t mode_event_links_count = 0;
 
 esp_event_loop_handle_t mode_event_linker_event_loop;
 
+esp_err_t mode_event_linker_load();
+
 void mode_event_linker_handler(void* args, esp_event_base_t base, int32_t id, void* event_data)
 {
     esp_err_t err;
@@ -39,6 +41,17 @@ void mode_event_linker_handler(void* args, esp_event_base_t base, int32_t id, vo
                 break;
             }
         }
+    }
+}
+
+void mode_event_linker_config_update_handler(void* args, esp_event_base_t base, int32_t id, void* event_data)
+{
+    config_manager_event_update_t* update = (config_manager_event_update_t*)event_data;
+    
+    if (id == CONFIG_MANAGER_EVENT_UPDATE && strcmp(update->namespace, "modeEventLinker") == 0 && strcmp(update->key, "links") == 0)
+    {
+        ESP_LOGI(TAG, "Reloading mode event links");
+        mode_event_linker_load();
     }
 }
 
@@ -102,6 +115,9 @@ esp_err_t mode_event_linker_init()
 
     // Set up the event handler
     ESP_RETURN_ON_ERROR(esp_event_handler_register_with(mode_event_linker_event_loop, MODE_EVENT, ESP_EVENT_ANY_ID, mode_event_linker_handler, NULL), TAG, "Failed to register mode event linker handler");
+
+    // Set up the config update handler
+    ESP_RETURN_ON_ERROR(config_manager_register_update_handler(&mode_event_linker_config_update_handler, NULL), TAG, "Failed to register config update handler");
 
     // Load the mode event links
     ESP_RETURN_ON_ERROR(mode_event_linker_load(), TAG, "Failed to load mode event links");

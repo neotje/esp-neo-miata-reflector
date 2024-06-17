@@ -47,8 +47,20 @@ esp_err_t mode_event_linker_add(uint8_t mode_id, int32_t event_id, mode_event_li
  */
 esp_err_t mode_event_linker_remove(uint8_t mode_id, int32_t event_id, mode_event_link_action_t action);
 
+/**
+ * @brief Post an event to the event loop. The event will be processed by the mode event linker.
+ * 
+ * @param event_id 
+ * @param event_data 
+ * @param event_data_size 
+ * @return esp_err_t 
+ */
 esp_err_t mode_event_linker_post(int32_t event_id, const void* event_data, size_t event_data_size);
 
+/**
+ * @brief Print all the links between modes and events.
+ * 
+ */
 void mode_event_linker_print();
 
 #endif

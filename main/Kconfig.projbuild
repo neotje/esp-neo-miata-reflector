@@ -31,14 +31,6 @@ menu "esp-neo-miata-reflector"
     endmenu
 
     menu "tasks"
-        config MARKER_EVENT_LOOP_TASK_PRIORITY
-            int "Marker event loop task priority"
-            range 0 10
-            default 2
-            help 
-                The priority of the marker event loop task.
-
-        
 
         menu "mode stack manager"
             config MODE_STACK_MANAGER_TASK_PRIORITY
@@ -96,6 +88,29 @@ menu "esp-neo-miata-reflector"
 
             config CONFIG_MANAGER_EVENT_LOOP_STACK_SIZE
                 int "Config manager event loop stack size"
+                range 512 8192
+                default 4096
+                help 
+                    The size of the config manager event loop stack.
+        endmenu
+
+        menu "mode event linker"
+            config MODE_EVENT_LINKER_EVENT_LOOP_PRIORITY
+                int "Mode event linker event loop task priority"
+                range 0 10
+                default 0
+                help 
+                    The priority of the config manager task.
+
+            config MODE_EVENT_LINKER_EVENT_QUEUE_SIZE
+                int "Mode event linker event queue size"
+                range 1 100
+                default 10
+                help 
+                    The size of the config manager event queue.
+
+            config MODE_EVENT_LINKER_EVENT_LOOP_STACK_SIZE
+                int "Mode event linker event loop stack size"
                 range 512 8192
                 default 4096
                 help 

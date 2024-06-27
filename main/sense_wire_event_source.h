@@ -2,6 +2,7 @@
 #define SENSOR_WIRE_EVENT_SOURCE_H
 
 #include <stdint.h>
+#include "time.h"
 
 #include "esp_check.h"
 #include "esp_log.h"

@@ -54,9 +54,9 @@ const size_t sense_wires_count = sizeof(sense_wires) / sizeof(sense_wire_t);
 
 adc_oneshot_unit_handle_t adc_handle;
 
-TaskHandle_t sense_wire_event_source_task_handle = NULL;
+esp_timer_handle_t sense_wire_event_source_timer_handle = NULL;
 
-void sense_wire_event_source_config_update_handler(void *args, esp_event_base_t base, int32_t id, void *event_data)
+static void sense_wire_event_source_config_update_handler(void *args, esp_event_base_t base, int32_t id, void *event_data)
 {
     config_manager_event_update_t *config_event = (config_manager_event_update_t *)event_data;
 
@@ -76,56 +76,53 @@ void sense_wire_event_source_config_update_handler(void *args, esp_event_base_t 
     }
 }
 
-void sense_wire_event_source_task(void* args)
+static void sense_wire_event_source_task(void* args)
 {
     static time_t on_time;
     static time_t off_time;
 
     esp_err_t err = ESP_OK;
 
-    while(1)
+    for (size_t i = 0; i < sense_wires_count; i++)
     {
-        for (size_t i = 0; i < sense_wires_count; i++)
+        sense_wire_t *sense_wire = &sense_wires[i];
+
+        int current_level = 0;
+        err = sense_wire_event_source_read_wire(i, &current_level);
+
+        CONTINUE_ON_ERROR(err, "Failed to read sense wire %d", i);
+
+        if (sense_wire->level != current_level)
         {
-            sense_wire_t *sense_wire = &sense_wires[i];
+            sense_wire->debounce_counter++;
+        }
+        else
+        {
+            sense_wire->debounce_counter = 0;
+        }
 
-            int current_level = 0;
-            err = sense_wire_event_source_read_wire(i, &current_level);
+        if (sense_wire->debounce_counter >= TIME_TO_TICKS(sense_wire->debounce))
+        {
+            sense_wire->level = current_level;
+            sense_wire->debounce_counter = 0;
 
-            CONTINUE_ON_ERROR(err, "Failed to read sense wire %d", i);
-
-            if (sense_wire->level != current_level)
+            if (sense_wire->level == HIGH)
             {
-                sense_wire->debounce_counter++;
-            }
+                ESP_LOGI(TAG, "Sense wire %d ON", i);
+
+                time(&on_time);
+                mode_event_linker_post(sense_wire->on_event_id, &on_time, sizeof(time_t));
+            } 
             else
             {
-                sense_wire->debounce_counter = 0;
-            }
+                ESP_LOGI(TAG, "Sense wire %d OFF", i);
 
-            if (sense_wire->debounce_counter >= sense_wire->debounce)
-            {
-                sense_wire->level = current_level;
-                sense_wire->debounce_counter = 0;
-
-                if (sense_wire->level == HIGH)
-                {
-                    ESP_LOGI(TAG, "Sense wire %d ON", i);
-
-                    time(&on_time);
-                    mode_event_linker_post(sense_wire->on_event_id, &on_time, sizeof(time_t));
-                } 
-                else
-                {
-                    ESP_LOGI(TAG, "Sense wire %d OFF", i);
-
-                    time(&off_time);
-                    mode_event_linker_post(sense_wire->off_event_id, &off_time, sizeof(time_t));
-                }
+                time(&off_time);
+                mode_event_linker_post(sense_wire->off_event_id, &off_time, sizeof(time_t));
             }
         }
-        
     }
+        
 }
 
 esp_err_t sense_wire_event_source_read_raw(int index, int *out_raw)
@@ -245,14 +242,16 @@ esp_err_t sense_wire_event_source_init()
 
     ESP_RETURN_ON_ERROR(config_manager_register_update_handler(sense_wire_event_source_config_update_handler, NULL), TAG, "Failed to add config update handler");
 
-    xTaskCreate(
-        sense_wire_event_source_task,
-        "sense_wire_event_source_task",
-        CONFIG_SENSE_WIRE_EVENT_SOURCE_TASK_STACK_SIZE,
-        NULL,
-        uxTaskPriorityGet(NULL) + CONFIG_SENSE_WIRE_EVENT_SOURCE_TASK_PRIORITY,
-        &sense_wire_event_source_task_handle
-    );
+    esp_timer_create_args_t button_timer = {
+        .arg = NULL,
+        .callback = sense_wire_event_source_task,
+        .dispatch_method = ESP_TIMER_TASK,
+        .name = "sense_wire_event_source_timer"
+    };
+    
+    ESP_RETURN_ON_ERROR(esp_timer_create(&button_timer, &sense_wire_event_source_timer_handle), TAG, "Failed to create sense wire event source timer");
+
+    ESP_RETURN_ON_ERROR(esp_timer_start_periodic(sense_wire_event_source_timer_handle, CONFIG_SENSE_WIRE_EVENT_SOURCE_TIMER_INTERVAL_MS * 1000), TAG, "Failed to start sense wire event source timer");
 
     return ESP_OK;
 }
@@ -270,6 +269,8 @@ esp_err_t sense_wire_event_source_read_wire(int index, int *out_value)
     {
         sense_wires[index].level = LOW;
     }
+
+    *out_value = sense_wires[index].level;
 
     return ESP_OK;
 }

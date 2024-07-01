@@ -10,12 +10,15 @@
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"
+#include "esp_timer.h"
 
 #include "mode_event_linker.h"
 #include "config_manager.h"
 
 #define HIGH 1
 #define LOW 0
+
+#define TIME_TO_TICKS(time) (time / CONFIG_SENSE_WIRE_EVENT_SOURCE_TIMER_INTERVAL_MS)
 
 typedef struct {
     int io_num;
@@ -27,13 +30,13 @@ typedef struct {
     const char* threshold_key;
     const char* debounce_key;
     int32_t threshold;
-    int32_t debounce;
+    int32_t debounce; // in ms
 
     int32_t on_event_id;
     int32_t off_event_id;
 
     int level;
-    int debounce_counter;
+    int debounce_counter; // in ticks of SENSE_WIRE_EVENT_SOURCE_TIMER_INTERVAL_MS
 } sense_wire_t;
 
 /**

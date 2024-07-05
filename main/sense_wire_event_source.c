@@ -29,12 +29,13 @@ sense_wire_t sense_wires[] = {
         .debounce = 0,
         .on_event_id = MARKER_EVENT_SENSE1_ON,
         .off_event_id = MARKER_EVENT_SENSE1_OFF,
-        .level = 0,
-        .debounce_counter = 0,
+        .last_state = 0,
+        .current_state = 0,
+        .debounceStartTime = 0,
     },
     {
 #if CONFIG_IDF_TARGET_ESP32S3
-        .io_num = CONFIG_BOARD_SENS1_PIN,
+        .io_num = CONFIG_BOARD_SENS2_PIN,
 #elif CONFIG_IDF_TARGET_ESP32
         .io_num = 33,
 #endif
@@ -46,8 +47,9 @@ sense_wire_t sense_wires[] = {
         .debounce = 0,
         .on_event_id = MARKER_EVENT_SENSE2_ON,
         .off_event_id = MARKER_EVENT_SENSE2_OFF,
-        .level = 0,
-        .debounce_counter = 0,
+        .last_state = 0,
+        .current_state = 0,
+        .debounceStartTime = 0,
     }};
 
 const size_t sense_wires_count = sizeof(sense_wires) / sizeof(sense_wire_t);
@@ -78,13 +80,13 @@ static void sense_wire_event_source_config_update_handler(void *args, esp_event_
 
 static void sense_wire_event_source_task(void* args)
 {
-    static time_t on_time;
-    static time_t off_time;
-
     esp_err_t err = ESP_OK;
 
     for (size_t i = 0; i < sense_wires_count; i++)
     {
+        int64_t on_time;
+        int64_t off_time;
+
         sense_wire_t *sense_wire = &sense_wires[i];
 
         int current_level = 0;
@@ -92,35 +94,32 @@ static void sense_wire_event_source_task(void* args)
 
         CONTINUE_ON_ERROR(err, "Failed to read sense wire %d", i);
 
-        if (sense_wire->level != current_level)
+        if (sense_wire->last_state != current_level)
         {
-            sense_wire->debounce_counter++;
-        }
-        else
-        {
-            sense_wire->debounce_counter = 0;
+            sense_wire->debounceStartTime = esp_timer_get_time();
         }
 
-        if (sense_wire->debounce_counter >= TIME_TO_TICKS(sense_wire->debounce))
+        if (esp_timer_get_time() - sense_wire->debounceStartTime < sense_wire->debounce * 1000 && sense_wire->current_state != current_level)
         {
-            sense_wire->level = current_level;
-            sense_wire->debounce_counter = 0;
+            sense_wire->current_state = current_level;
 
-            if (sense_wire->level == HIGH)
+            if (sense_wire->current_state == HIGH)
             {
-                ESP_LOGI(TAG, "Sense wire %d ON", i);
+                ESP_LOGD(TAG, "Sense wire %d ON", i);
 
-                time(&on_time);
+                on_time = esp_timer_get_time();
                 mode_event_linker_post(sense_wire->on_event_id, &on_time, sizeof(time_t));
             } 
             else
             {
-                ESP_LOGI(TAG, "Sense wire %d OFF", i);
+                ESP_LOGD(TAG, "Sense wire %d OFF", i);
 
-                time(&off_time);
+                off_time = esp_timer_get_time();
                 mode_event_linker_post(sense_wire->off_event_id, &off_time, sizeof(time_t));
             }
         }
+
+        sense_wire->last_state = current_level;
     }
         
 }
@@ -233,11 +232,7 @@ esp_err_t sense_wire_event_source_init()
         config_manager_get_i32("sense", sense_wires[i].threshold_key, &sense_wires[i].threshold);
         config_manager_get_i32("sense", sense_wires[i].debounce_key, &sense_wires[i].debounce);
 
-        // test the sense wire
-        int value = 0;
-        ESP_RETURN_ON_ERROR(sense_wire_event_source_read_cali(i, &value), TAG, "Failed to read ADC value");
-
-        ESP_LOGI(TAG, "Sense wire %d ADC value: %d", i, value);
+        ESP_LOGI(TAG, "Sense wire %d (threshold: %li, channel: %i)", i, sense_wires[i].threshold, sense_wires[i].adc_channel);
     }
 
     ESP_RETURN_ON_ERROR(config_manager_register_update_handler(sense_wire_event_source_config_update_handler, NULL), TAG, "Failed to add config update handler");
@@ -261,16 +256,29 @@ esp_err_t sense_wire_event_source_read_wire(int index, int *out_value)
     int value = 0;
     ESP_RETURN_ON_ERROR(sense_wire_event_source_read_raw(index, &value), TAG, "Failed to read ADC value");
 
+    //ESP_LOGI(TAG, "Sense wire %d raw value: %d", index, value);
+
     if (value > sense_wires[index].threshold)
     {
-        sense_wires[index].level = HIGH;
+        value = HIGH;
     }
     else
     {
-        sense_wires[index].level = LOW;
+        value = LOW;
     }
 
-    *out_value = sense_wires[index].level;
+    *out_value = value;
 
     return ESP_OK;
+}
+
+int sense_wire_event_source_get_state(int index)
+{
+    if (index < 0 || index >= sense_wires_count)
+    {
+        ESP_LOGE(TAG, "Invalid sense wire index %d", index);
+        return -1;
+    }
+
+    return sense_wires[index].current_state;
 }

@@ -49,6 +49,6 @@ esp_err_t sense_wire_event_source_init();
 
 esp_err_t sense_wire_event_source_read_wire(int index, int* out_value);
 
-esp_err_t sense_wire_event_source_get(int index, sense_wire_t** out_sense_wire);
+int sense_wire_event_source_get_state(int index);
 
 #endif // SENSOR_WIRE_EVENT_SOURCE_H

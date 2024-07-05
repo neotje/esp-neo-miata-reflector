@@ -35,8 +35,9 @@ typedef struct {
     int32_t on_event_id;
     int32_t off_event_id;
 
-    int level;
-    int debounce_counter; // in ticks of SENSE_WIRE_EVENT_SOURCE_TIMER_INTERVAL_MS
+    int last_state;
+    int current_state;
+    int64_t debounceStartTime; // in ms
 } sense_wire_t;
 
 /**

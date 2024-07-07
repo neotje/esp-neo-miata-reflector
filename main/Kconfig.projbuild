@@ -117,6 +117,13 @@ menu "esp-neo-miata-reflector"
                     The size of the config manager event loop stack.
         endmenu
 
-        
+        menu "sense wire event source"
+            config SENSE_WIRE_EVENT_SOURCE_TIMER_INTERVAL_MS
+                int "Sense wire event source timer interval"
+                range 2 20
+                default 5
+                help 
+                    The interval of the sense wire event source timer.
+        endmenu
     endmenu
 endmenu

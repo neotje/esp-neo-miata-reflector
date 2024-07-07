@@ -20,3 +20,5 @@ interval,data,u16,500
 sense,namespace,,
 threshold1,data,i32,100
 threshold2,data,i32,100
+debounce1,data,i32,30
+debounce2,data,i32,30

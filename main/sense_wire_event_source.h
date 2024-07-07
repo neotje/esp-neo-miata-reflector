@@ -29,15 +29,15 @@ typedef struct {
 
     const char* threshold_key;
     const char* debounce_key;
-    int32_t threshold;
-    int32_t debounce; // in ms
+    int32_t threshold; // threshold value
+    int32_t debounce; // debounce time in ms
 
     int32_t on_event_id;
     int32_t off_event_id;
 
-    int last_state;
-    int current_state;
-    int64_t debounceStartTime; // in ms
+    int last_state; // last read state
+    int current_state; // current state
+    int64_t debounce_start_time; // in us
 } sense_wire_t;
 
 /**
@@ -47,8 +47,29 @@ typedef struct {
  */
 esp_err_t sense_wire_event_source_init();
 
+/**
+ * @brief Read the state of the sense wire.
+ * 
+ * @param index The index of the sense wire.
+ * @param out_value The value of the sense wire.
+ * @return esp_err_t 
+ */
 esp_err_t sense_wire_event_source_read_wire(int index, int* out_value);
 
+/**
+ * @brief Get the state of the sense wire.
+ * 
+ * @param index The index of the sense wire.
+ * @return int The state of the sense wire.
+ */
 int sense_wire_event_source_get_state(int index);
+
+/**
+ * @brief Get the sense wire at the specified index.
+ * 
+ * @param index The index of the sense wire.
+ * @return sense_wire_t* The sense wire at the specified index.
+ */
+sense_wire_t* get_sense_wire(int index);
 
 #endif // SENSOR_WIRE_EVENT_SOURCE_H

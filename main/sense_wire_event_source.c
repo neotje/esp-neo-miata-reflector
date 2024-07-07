@@ -31,7 +31,7 @@ sense_wire_t sense_wires[] = {
         .off_event_id = MARKER_EVENT_SENSE1_OFF,
         .last_state = 0,
         .current_state = 0,
-        .debounceStartTime = 0,
+        .debounce_start_time = 0,
     },
     {
 #if CONFIG_IDF_TARGET_ESP32S3
@@ -49,7 +49,7 @@ sense_wire_t sense_wires[] = {
         .off_event_id = MARKER_EVENT_SENSE2_OFF,
         .last_state = 0,
         .current_state = 0,
-        .debounceStartTime = 0,
+        .debounce_start_time = 0,
     }};
 
 const size_t sense_wires_count = sizeof(sense_wires) / sizeof(sense_wire_t);
@@ -91,15 +91,16 @@ static void sense_wire_event_source_task(void* args)
 
         int current_level = 0;
         err = sense_wire_event_source_read_wire(i, &current_level);
-
         CONTINUE_ON_ERROR(err, "Failed to read sense wire %d", i);
 
+        // Debounce
         if (sense_wire->last_state != current_level)
         {
-            sense_wire->debounceStartTime = esp_timer_get_time();
+            sense_wire->debounce_start_time = esp_timer_get_time();
         }
 
-        if (esp_timer_get_time() - sense_wire->debounceStartTime < sense_wire->debounce * 1000 && sense_wire->current_state != current_level)
+        // If the debounce time has not passed, do not update the state
+        if (esp_timer_get_time() - sense_wire->debounce_start_time < sense_wire->debounce * 1000 && sense_wire->current_state != current_level)
         {
             sense_wire->current_state = current_level;
 
@@ -281,4 +282,15 @@ int sense_wire_event_source_get_state(int index)
     }
 
     return sense_wires[index].current_state;
+}
+
+sense_wire_t *get_sense_wire(int index)
+{
+    if (index < 0 || index >= sense_wires_count)
+    {
+        ESP_LOGE(TAG, "Invalid sense wire index %d", index);
+        return NULL;
+    }
+
+    return &sense_wires[index];
 }

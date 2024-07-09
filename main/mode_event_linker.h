@@ -1,3 +1,8 @@
+/**
+ * @file mode_event_linker.h
+ * @version 1.1
+ */
+
 #ifndef MODE_EVENT_LINKER_H
 #define MODE_EVENT_LINKER_H
 

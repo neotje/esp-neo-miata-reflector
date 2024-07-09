@@ -1,3 +1,8 @@
+/**
+ * @file mode_event_linker.c
+ * @version 1.1
+ */
+
 #include "mode_event_linker.h"
 
 ESP_EVENT_DEFINE_BASE(MODE_EVENT);

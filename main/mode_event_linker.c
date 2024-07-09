@@ -1,3 +1,8 @@
+/**
+ * @file mode_event_linker.c
+ * @version 1.1
+ */
+
 #include "mode_event_linker.h"
 
 ESP_EVENT_DEFINE_BASE(MODE_EVENT);
@@ -228,4 +233,14 @@ void mode_event_linker_print()
     {
         ESP_LOGI(TAG, "Mode %d, Event %d, Action %d", (int)mode_event_links[i].mode_id, (int)mode_event_links[i].event_id, (int)mode_event_links[i].action);
     }
+}
+
+esp_err_t mode_event_linker_register_handler(int32_t event_id, esp_event_handler_t event_handler, void* evnent_handler_arg, esp_event_handler_instance_t* instance)
+{
+    return esp_event_handler_instance_register_with(mode_event_linker_event_loop, MODE_EVENT, event_id, event_handler, evnent_handler_arg, instance);
+}
+
+esp_err_t mode_event_linker_unregister_handler(int32_t event_id, esp_event_handler_instance_t instance)
+{
+    return esp_event_handler_instance_unregister_with(mode_event_linker_event_loop, MODE_EVENT, event_id, instance);
 }

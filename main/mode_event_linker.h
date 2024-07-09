@@ -63,4 +63,24 @@ esp_err_t mode_event_linker_post(int32_t event_id, const void* event_data, size_
  */
 void mode_event_linker_print();
 
+/**
+ * @brief Register an event handler for a specific event.
+ * 
+ * @param event_id 
+ * @param event_handler 
+ * @param evnent_handler_arg 
+ * @param instance 
+ * @return esp_err_t 
+ */
+esp_err_t mode_event_linker_register_handler(int32_t event_id, esp_event_handler_t event_handler, void* evnent_handler_arg, esp_event_handler_instance_t* instance);
+
+/**
+ * @brief Unregister an event handler for a specific event.
+ * 
+ * @param event_id 
+ * @param instance 
+ * @return esp_err_t 
+ */
+esp_err_t mode_event_linker_unregister_handler(int32_t event_id, esp_event_handler_instance_t instance);
+
 #endif

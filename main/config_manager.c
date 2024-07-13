@@ -172,7 +172,7 @@ esp_err_t config_manager_get_i32(const char *namespace, const char *key, int32_t
     return ESP_OK;
 }
 
-esp_err_t config_manager_set_i64(const char *namespace, const char *key, int32_t value)
+esp_err_t config_manager_set_i64(const char *namespace, const char *key, int64_t value)
 {
     nvs_handle_t handle;
 
@@ -193,7 +193,7 @@ esp_err_t config_manager_set_i64(const char *namespace, const char *key, int32_t
     return ESP_OK;
 }
 
-esp_err_t config_manager_get_i64(const char *namespace, const char *key, int32_t *out)
+esp_err_t config_manager_get_i64(const char *namespace, const char *key, int64_t *out)
 {
     nvs_handle_t handle;
 

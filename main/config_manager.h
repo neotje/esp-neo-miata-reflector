@@ -95,7 +95,7 @@ esp_err_t config_manager_get_i32(const char *namespace, const char *key, int32_t
  * @param value value to store
  * @return esp_err_t 
  */
-esp_err_t config_manager_set_i64(const char *namespace, const char *key, int32_t value);
+esp_err_t config_manager_set_i64(const char *namespace, const char *key, int64_t value);
 
 /**
  * @brief get int64_t value from namespace
@@ -105,7 +105,7 @@ esp_err_t config_manager_set_i64(const char *namespace, const char *key, int32_t
  * @param out pointer to store value
  * @return esp_err_t 
  */
-esp_err_t config_manager_get_i64(const char *namespace, const char *key, int32_t *out);
+esp_err_t config_manager_get_i64(const char *namespace, const char *key, int64_t *out);
 
 /**
  * @brief set variable length binary data in namespace

@@ -100,6 +100,104 @@ esp_err_t mode_event_linker_save()
     return ESP_OK;
 }
 
+static struct {
+    struct arg_str *event;
+    struct arg_end *end;
+} trigger_args;
+
+static int mode_event_linker_trigger(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void**) &trigger_args);
+
+    if (nerrors != 0)
+    {
+        arg_print_errors(stderr, trigger_args.end, argv[0]);
+        return 1;
+    }
+
+    int32_t event_id = -1;
+    void *event_data = NULL;
+    size_t event_data_size = 0;
+
+    if (strcmp(trigger_args.event->sval[0], "SENSE1_ON") == 0)
+    {
+        event_id = MARKER_EVENT_SENSE1_ON;
+        int64_t time = esp_timer_get_time();
+        event_data = &time;
+        event_data_size = sizeof(time);
+    }
+    else if (strcmp(trigger_args.event->sval[0], "SENSE2_ON") == 0)
+    {
+        event_id = MARKER_EVENT_SENSE2_ON;
+        int64_t time = esp_timer_get_time();
+        event_data = &time;
+        event_data_size = sizeof(time);
+    }
+    else if (strcmp(trigger_args.event->sval[0], "SENSE1_OFF") == 0)
+    {
+        event_id = MARKER_EVENT_SENSE1_OFF;
+        int64_t time = esp_timer_get_time();
+        event_data = &time;
+        event_data_size = sizeof(time);
+    }
+    else if (strcmp(trigger_args.event->sval[0], "SENSE2_OFF") == 0)
+    {
+        event_id = MARKER_EVENT_SENSE2_OFF;
+        int64_t time = esp_timer_get_time();
+        event_data = &time;
+        event_data_size = sizeof(time);
+    }
+    else if (strcmp(trigger_args.event->sval[0], "RUNNING_LIGHTS_ON") == 0)
+    {
+        event_id = MARKER_EVENT_RUNNING_LIGHTS_ON;
+    }
+    else if (strcmp(trigger_args.event->sval[0], "RUNNING_LIGHTS_OFF") == 0)
+    {
+        event_id = MARKER_EVENT_RUNNING_LIGHTS_OFF;
+    }
+    else if (strcmp(trigger_args.event->sval[0], "TURN_SIGNAL_ON") == 0)
+    {
+        event_id = MARKER_EVENT_TURN_SIGNAL_ON;
+    }
+    else if (strcmp(trigger_args.event->sval[0], "TURN_SIGNAL_OFF") == 0)
+    {
+        event_id = MARKER_EVENT_TURN_SIGNAL_OFF;
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Invalid event %s", trigger_args.event->sval[0]);
+        return 1;
+    }
+
+    esp_err_t result = mode_event_linker_post(event_id, event_data, event_data_size);
+
+    if (result != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to post event %s", trigger_args.event->sval[0]);
+        return 1;
+    }
+
+    return 0;
+}
+
+esp_err_t mode_event_linker_register_trigger()
+{
+    trigger_args.event = arg_str1(NULL, NULL, "<event>", "Event to trigger: SENSE1_ON, SENSE2_ON, SENSE1_OFF, SENSE2_OFF, RUNNING_LIGHTS_ON, RUNNING_LIGHTS_OFF, TURN_SIGNAL_ON, TURN_SIGNAL_OFF");
+    trigger_args.end = arg_end(1);
+
+    const esp_console_cmd_t cmd = {
+        .command = "trigger",
+        .help = "Trigger an event",
+        .hint = NULL,
+        .func = &mode_event_linker_trigger,
+        .argtable = &trigger_args
+    };
+
+    ESP_RETURN_ON_ERROR(esp_console_cmd_register(&cmd), TAG, "Failed to register trigger command");
+
+    return ESP_OK;
+}
+
 /*
 PUBLIC
 */
@@ -126,6 +224,8 @@ esp_err_t mode_event_linker_init()
 
     // Load the mode event links
     ESP_RETURN_ON_ERROR(mode_event_linker_load(), TAG, "Failed to load mode event links");
+
+    ESP_RETURN_ON_ERROR(mode_event_linker_register_trigger(), TAG, "Failed to register trigger command");
 
     ESP_LOGI(TAG, "Mode event linker initialized");
 
@@ -221,6 +321,7 @@ esp_err_t mode_event_linker_remove(uint8_t mode_id, int32_t event_id, mode_event
 
 esp_err_t mode_event_linker_post(int32_t event_id, const void *event_data, size_t event_data_size)
 {
+    ESP_LOGI(TAG, "Posting event %s", mode_event_to_string(event_id));
     // Post the event
     return esp_event_post_to(mode_event_linker_event_loop, MODE_EVENT, event_id, event_data, event_data_size, portMAX_DELAY);
 }

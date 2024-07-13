@@ -155,9 +155,9 @@ esp_err_t blinker_event_source_init()
     ESP_RETURN_ON_ERROR(blinker_event_source_set_sense_wire(sense_wire_index), TAG, "Failed to set sense wire");
 
     // load config
-    ESP_RETURN_ON_ERROR(config_manager_get_i32(NAMESPACE, ON_DURATION_KEY, &on_duration), TAG, "Failed to get on duration");
-    ESP_RETURN_ON_ERROR(config_manager_get_i32(NAMESPACE, OFF_DURATION_KEY, &off_duration), TAG, "Failed to get off duration");
-    ESP_RETURN_ON_ERROR(config_manager_get_i32(NAMESPACE, TIMER_OFFSET_KEY, &timer_offset), TAG, "Failed to get timer offset");
+    ESP_RETURN_ON_ERROR(config_manager_get_i64(NAMESPACE, ON_DURATION_KEY, &on_duration), TAG, "Failed to get on duration");
+    ESP_RETURN_ON_ERROR(config_manager_get_i64(NAMESPACE, OFF_DURATION_KEY, &off_duration), TAG, "Failed to get off duration");
+    ESP_RETURN_ON_ERROR(config_manager_get_i64(NAMESPACE, TIMER_OFFSET_KEY, &timer_offset), TAG, "Failed to get timer offset");
 
     ESP_RETURN_ON_ERROR(config_manager_register_update_handler(blinker_event_source_config_update_handler, NULL), TAG, "Failed to register config update handler");
 

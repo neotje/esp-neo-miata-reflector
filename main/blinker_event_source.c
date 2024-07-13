@@ -173,7 +173,7 @@ esp_err_t blinker_event_source_set_sense_wire(int index)
     }
     else if (index != 0)
     {
-        if (current_sense_wire_index != index)
+        if (current_sense_wire_index != index && current_sense_wire_index != 0)
         {
             // deinit event handlers
             ESP_RETURN_ON_ERROR(unregister_wire(current_sense_wire_index - 1), TAG, "Failed to unregister sense wire");

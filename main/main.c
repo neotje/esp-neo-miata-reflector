@@ -21,11 +21,30 @@ stack_manager_mode_t idle_mode = {
 static esp_console_repl_t *repl = NULL;
 esp_console_repl_config_t repl_config = ESP_CONSOLE_REPL_CONFIG_DEFAULT();
 
+static int restart(int argc, char **argv)
+{
+    ESP_LOGI(TAG, "Restarting");
+    esp_restart();
+}
+
+static void register_restart(void)
+{
+    const esp_console_cmd_t cmd = {
+        .command = "restart",
+        .help = "Software reset of the chip",
+        .hint = NULL,
+        .func = &restart,
+    };
+    ESP_ERROR_CHECK( esp_console_cmd_register(&cmd) );
+}
+
 esp_err_t init_console() {
     repl_config.prompt = ">";
     repl_config.max_cmdline_length = 1024;
 
     ESP_RETURN_ON_ERROR(esp_console_register_help_command(), TAG, "register help command");
+
+    register_restart();
 
     return ESP_OK;
 }

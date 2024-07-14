@@ -124,6 +124,8 @@ void calculateOffDuration()
     {
         off_duration = last_on_time - last_off_time;
         state_manager_set(OFF_DURATION_KEY, &off_duration, sizeof(off_duration));
+        config_manager_set_i64(NAMESPACE, OFF_DURATION_KEY, off_duration);
+        ESP_LOGI(TAG, "Off duration: %lld", off_duration / 1000);
     }
 }
 
@@ -133,7 +135,103 @@ void calculateOnDuration()
     {
         on_duration = last_off_time - last_on_time;
         state_manager_set(ON_DURATION_KEY, &on_duration, sizeof(on_duration));
+        config_manager_set_i64(NAMESPACE, ON_DURATION_KEY, on_duration);
+        ESP_LOGI(TAG, "On duration: %lld", on_duration / 1000);
     }
+}
+
+static struct {
+    struct arg_int *index;
+    struct arg_end *end;
+} set_sense_wire_args;
+
+static int blinker_event_source_set_sense_wire_cmd(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **)&set_sense_wire_args);
+
+    if (nerrors != 0)
+    {
+        arg_print_errors(stderr, set_sense_wire_args.end, argv[0]);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    int index = set_sense_wire_args.index->ival[0];
+
+    esp_err_t err = blinker_event_source_set_sense_wire(index);
+
+    if (err != ESP_OK)
+    {
+        printf("\n");
+        return 1;
+    }
+
+    err = config_manager_set_u8(NAMESPACE, SENSE_WIRE_INDEX_KEY, index);
+
+    if (err != ESP_OK)
+    {
+        printf("\n");
+        return 1;
+    }
+
+    return ESP_OK;
+}
+
+static esp_err_t blinker_event_source_register_set_sense_wire()
+{
+    set_sense_wire_args.index = arg_int1(NULL, NULL, "<index>", "0 - disable, 1 - sense wire 1, 2 - sense wire 2");
+    set_sense_wire_args.end = arg_end(1);
+
+    const esp_console_cmd_t cmd = {
+        .command = "set_sense_wire",
+        .help = "Set the sense wire index for the blinker",
+        .hint = NULL,
+        .func = &blinker_event_source_set_sense_wire_cmd,
+        .argtable = &set_sense_wire_args
+    };
+
+    ESP_RETURN_ON_ERROR(esp_console_cmd_register(&cmd), TAG, "Failed to register set_sense_wire command");
+
+    return ESP_OK;
+}
+
+static struct {
+    struct arg_end *end;
+} get_blinker_args;
+
+static int blinker_event_source_get_blinker_cmd(int argc, char **argv)
+{
+    int nerrors = arg_parse(argc, argv, (void **)&get_blinker_args);
+
+    if (nerrors != 0)
+    {
+        arg_print_errors(stderr, get_blinker_args.end, argv[0]);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    printf("On duration: %lld ms\n", on_duration / 1000);
+    printf("Off duration: %lld ms\n", off_duration / 1000);
+    printf("Timer offset: %lld\n", timer_offset);
+    printf("Sense wire index: %d\n", current_sense_wire_index);
+
+    return ESP_OK;
+}
+
+static esp_err_t blinker_event_source_register_get_blinker()
+{
+    get_blinker_args.end = arg_end(1);
+
+    const esp_console_cmd_t cmd = {
+        .command = "get_blinker",
+        .help = "Get the blinker configuration/measured values",
+        .hint = NULL,
+        .func = &blinker_event_source_get_blinker_cmd,
+        .argtable = &get_blinker_args
+    };
+
+    ESP_RETURN_ON_ERROR(esp_console_cmd_register(&cmd), TAG, "Failed to register get_blinker command");
+
+    return ESP_OK;
+
 }
 
 /*
@@ -160,6 +258,9 @@ esp_err_t blinker_event_source_init()
     ESP_RETURN_ON_ERROR(config_manager_get_i64(NAMESPACE, TIMER_OFFSET_KEY, &timer_offset), TAG, "Failed to get timer offset");
 
     ESP_RETURN_ON_ERROR(config_manager_register_update_handler(blinker_event_source_config_update_handler, NULL), TAG, "Failed to register config update handler");
+
+    ESP_RETURN_ON_ERROR(blinker_event_source_register_set_sense_wire(), TAG, "Failed to register set_sense_wire command");
+    ESP_RETURN_ON_ERROR(blinker_event_source_register_get_blinker(), TAG, "Failed to register get_blinker command");
 
     return ESP_OK;
 }

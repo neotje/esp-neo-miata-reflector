@@ -12,6 +12,8 @@
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_timer.h"
+#include "esp_console.h"
+#include "argtable3/argtable3.h"
 
 #include "mode_event_linker.h"
 #include "sense_wire_event_source.h"

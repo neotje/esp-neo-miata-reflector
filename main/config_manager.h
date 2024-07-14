@@ -1,3 +1,8 @@
+/**
+ * @file config_manager.h
+ * @version 1.1
+ */
+
 #ifndef CONFIG_MANAGER_H
 #define CONFIG_MANAGER_H
 
@@ -82,6 +87,25 @@ esp_err_t config_manager_set_i32(const char *namespace, const char *key, int32_t
  */
 esp_err_t config_manager_get_i32(const char *namespace, const char *key, int32_t *out);
 
+/**
+ * @brief set int64_t value in namespace
+ * 
+ * @param namespace namespace to store value in
+ * @param key key to store value under
+ * @param value value to store
+ * @return esp_err_t 
+ */
+esp_err_t config_manager_set_i64(const char *namespace, const char *key, int64_t value);
+
+/**
+ * @brief get int64_t value from namespace
+ * 
+ * @param namespace namespace to get value from
+ * @param key key to get value from
+ * @param out pointer to store value
+ * @return esp_err_t 
+ */
+esp_err_t config_manager_get_i64(const char *namespace, const char *key, int64_t *out);
 
 /**
  * @brief set variable length binary data in namespace

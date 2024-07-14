@@ -1,3 +1,8 @@
+/**
+ * @file config_manager.c
+ * @version 1.1
+ */
+
 #include "config_manager.h"
 
 ESP_EVENT_DEFINE_BASE(CONFIG_MANAGER_EVENT);
@@ -160,6 +165,42 @@ esp_err_t config_manager_get_i32(const char *namespace, const char *key, int32_t
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to open namespace");
 
     err = nvs_get_i32(handle, key, out);
+    ESP_RETURN_ON_ERROR(err, TAG, "Failed to get value");
+
+    nvs_close(handle);
+
+    return ESP_OK;
+}
+
+esp_err_t config_manager_set_i64(const char *namespace, const char *key, int64_t value)
+{
+    nvs_handle_t handle;
+
+    esp_err_t err = nvs_open(namespace, NVS_READWRITE, &handle);
+    ESP_RETURN_ON_ERROR(err, TAG, "Failed to open namespace");
+
+    err = nvs_set_i64(handle, key, value);
+    ESP_RETURN_ON_ERROR(err, TAG, "Failed to set value");
+
+    err = nvs_commit(handle);
+    ESP_RETURN_ON_ERROR(err, TAG, "Failed to commit value");
+
+    nvs_close(handle);
+
+    err = config_trigger_update_event(namespace, key);
+    ESP_RETURN_ON_ERROR(err, TAG, "Failed to trigger update event");
+
+    return ESP_OK;
+}
+
+esp_err_t config_manager_get_i64(const char *namespace, const char *key, int64_t *out)
+{
+    nvs_handle_t handle;
+
+    esp_err_t err = nvs_open(namespace, NVS_READONLY, &handle);
+    ESP_RETURN_ON_ERROR(err, TAG, "Failed to open namespace");
+
+    err = nvs_get_i64(handle, key, out);
     ESP_RETURN_ON_ERROR(err, TAG, "Failed to get value");
 
     nvs_close(handle);

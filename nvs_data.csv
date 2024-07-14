@@ -14,9 +14,11 @@ enter,data,hex2bin,04
 exit,data,hex2bin,05
 brightness,data,u8,255
 colors,data,hex2bin,00ffffff
-blinkerSource,namespace,,
-sense,data,u8,1
-interval,data,u16,500
+blinker,namespace,,
+onDuration,data,i64,-1
+offDuration,data,i64,-1
+timerOffset,data,i64,0
+sense,data,u8,0
 sense,namespace,,
 threshold1,data,i32,100
 threshold2,data,i32,100

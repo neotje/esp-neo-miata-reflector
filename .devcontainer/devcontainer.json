@@ -27,7 +27,8 @@
 				"espressif.esp-idf-extension",
 				"GitHub.copilot",
 				"cschlosser.doxdocgen",
-				"ms-vscode.cpptools-extension-pack"
+				"ms-vscode.cpptools-extension-pack",
+				"mechatroner.rainbow-csv"
 			],
 		},
 		"codespaces": {

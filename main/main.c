@@ -9,6 +9,7 @@
 #include "mode_event_linker.h"
 #include "sense_wire_event_source.h"
 #include "blinker_event_source.h"
+#include "gfx.h"
 
 static const char *TAG = "marker_app_main";
 
@@ -82,6 +83,8 @@ void app_main(void)
     ESP_ERROR_CHECK(sense_wire_event_source_init());
 
     ESP_ERROR_CHECK(blinker_event_source_init());
+
+    ESP_ERROR_CHECK(gfx_init());
 
     ESP_ERROR_CHECK(start_console());
 }

@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "author": "Neo Hop",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-s3-devkitc-1",
+      "id": "esp",
+      "top": 19.02,
+      "left": 42.97,
+      "attrs": { "builder": "esp-idf" }
+    },
+    { "type": "wokwi-neopixel", "id": "rgb1", "top": 82.9, "left": -20.2, "attrs": {} },
+    { "type": "wokwi-neopixel", "id": "rgb2", "top": 82.9, "left": -49, "attrs": {} },
+    { "type": "wokwi-neopixel", "id": "rgb3", "top": 82.9, "left": -77.8, "attrs": {} },
+    { "type": "wokwi-neopixel", "id": "rgb4", "top": 82.9, "left": -106.6, "attrs": {} },
+    { "type": "wokwi-neopixel", "id": "rgb5", "top": 82.9, "left": -135.4, "attrs": {} },
+    { "type": "wokwi-neopixel", "id": "rgb6", "top": 82.9, "left": -164.2, "attrs": {} },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot1",
+      "top": -167.8,
+      "left": -10.6,
+      "attrs": { "travelLength": "30" }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot2",
+      "top": -81.4,
+      "left": -10.6,
+      "attrs": { "travelLength": "30" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "rgb1:DIN", "esp:5", "green", [ "h0" ] ],
+    [ "rgb1:VSS", "esp:5V", "red", [ "v0" ] ],
+    [ "rgb1:VSS", "rgb2:VSS", "red", [ "v8.7", "h-20" ] ],
+    [ "rgb1:VDD", "rgb2:VDD", "black", [ "h0", "v-9.6", "h-28.8" ] ],
+    [ "rgb1:DOUT", "rgb2:DIN", "green", [ "h0" ] ],
+    [ "rgb1:VDD", "esp:GND.1", "black", [ "h0", "v-9.6", "h28.8", "v172.8" ] ],
+    [ "rgb2:VDD", "rgb3:VDD", "black", [ "h0", "v-9.6", "h-28.8" ] ],
+    [ "rgb2:DOUT", "rgb3:DIN", "green", [ "h0" ] ],
+    [ "rgb3:VSS", "rgb2:VSS", "red", [ "v8.7", "h28" ] ],
+    [ "rgb3:VDD", "rgb4:VDD", "black", [ "h0", "v-9.6", "h-28.8" ] ],
+    [ "rgb5:VDD", "rgb4:VDD", "black", [ "h0", "v-9.6", "h28.8" ] ],
+    [ "rgb6:VDD", "rgb5:VDD", "black", [ "h0", "v-9.6", "h28.8" ] ],
+    [ "rgb3:VSS", "rgb4:VSS", "red", [ "v8.7", "h-20" ] ],
+    [ "rgb4:VSS", "rgb5:VSS", "red", [ "v8.7", "h-29.6" ] ],
+    [ "rgb5:VSS", "rgb6:VSS", "red", [ "v8.7", "h-20" ] ],
+    [ "rgb3:DOUT", "rgb4:DIN", "green", [ "h0" ] ],
+    [ "rgb4:DOUT", "rgb5:DIN", "green", [ "h0" ] ],
+    [ "rgb5:DOUT", "rgb6:DIN", "green", [ "h0" ] ],
+    [ "pot2:SIG", "esp:7", "blue", [ "h-9.6", "v56.8", "h48", "v67.2" ] ],
+    [ "pot1:SIG", "esp:6", "violet", [ "h-19.2", "v152.8", "h48", "v48" ] ],
+    [ "pot1:VCC", "pot2:VCC", "red", [ "h-28.8", "v86.4" ] ],
+    [ "pot2:VCC", "esp:3V3.1", "red", [ "h-28.8", "v67.2", "h76.8", "v19.2" ] ],
+    [ "pot1:GND", "pot2:GND", "black", [ "v0" ] ],
+    [ "pot2:GND", "esp:GND.4", "black", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}

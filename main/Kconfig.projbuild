@@ -30,6 +30,15 @@ menu "esp-neo-miata-reflector"
                 The pin number of the second voltage sensor.
     endmenu
 
+    menu "led strip"
+        config LED_STRIP_NUM_LEDS
+            int "Number of LEDs"
+            range 1 200
+            default 15
+            help 
+                The number of LEDs in the LED strip.
+    endmenu
+
     menu "tasks"
 
         menu "mode stack manager"

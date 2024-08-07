@@ -28,7 +28,8 @@
 				"GitHub.copilot",
 				"cschlosser.doxdocgen",
 				"ms-vscode.cpptools-extension-pack",
-				"mechatroner.rainbow-csv"
+				"mechatroner.rainbow-csv",
+				"Wokwi.wokwi-vscode"
 			],
 		},
 		"codespaces": {
@@ -44,7 +45,8 @@
 				"espressif.esp-idf-extension",
 				"GitHub.copilot",
 				"cschlosser.doxdocgen",
-				"ms-vscode.cpptools-extension-pack"
+				"ms-vscode.cpptools-extension-pack",
+				"Wokwi.wokwi-vscode"
 			],
 		}
 	},

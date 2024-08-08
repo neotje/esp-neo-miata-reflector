@@ -37,6 +37,13 @@ menu "esp-neo-miata-reflector"
             default 15
             help 
                 The number of LEDs in the LED strip.
+
+        config LED_STRIP_FPS
+            int "Frames per second"
+            range 1 60
+            default 30
+            help 
+                The number of frames per second the LED strip should be updated with.
     endmenu
 
     menu "tasks"

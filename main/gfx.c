@@ -22,7 +22,6 @@ uint32_t* draw_buffer = NULL;
 size_t draw_buffer_size = 0;
 
 int64_t transition_start_time = -1;
-bool is_transitioning = false;
 uint32_t transition_duration = 0;
 #define transition_duration_us (transition_duration * 1000)
 #define transition_end_time (transition_start_time + transition_duration_us)
@@ -30,6 +29,31 @@ uint32_t transition_duration = 0;
 led_strip_handle_t led_strip_handle = NULL;
 
 esp_timer_handle_t draw_loop_timer_handle = NULL;
+
+float ease_in_out_cubic(float t) {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+}
+
+void set_is_transitioning(bool value) {
+    void* value_ptr = (void*)&value;
+
+    if(state_manager_set("is_transitioning", value_ptr, sizeof(bool)) != ESP_OK) {
+        ESP_LOGW(TAG, "Failed to set is_transitioning");
+    }
+}
+
+bool get_is_transitioning() {
+    bool is_transitioning = false;
+    void* value;
+
+    if(state_manager_get("is_transitioning", &value, NULL) != ESP_OK) {
+        ESP_LOGW(TAG, "Failed to get is_transitioning");
+    } else {
+        is_transitioning = *(bool*)value;
+    }
+    
+    return is_transitioning;
+}
 
 void update_transition_duration() {
     if(config_manager_get_u32(NAMESPACE, TRANSITION_DURATION_KEY, &transition_duration) != ESP_OK) {
@@ -39,6 +63,7 @@ void update_transition_duration() {
 
 static void gfx_draw_loop(void* args) {
     float progress = 0.0f;
+    bool is_transitioning = get_is_transitioning();
 
     if (is_transitioning && esp_timer_get_time() <= transition_end_time) {
         progress = (float)(esp_timer_get_time() - transition_start_time) / transition_duration_us;
@@ -49,6 +74,7 @@ static void gfx_draw_loop(void* args) {
     }
 
     if (is_transitioning) {
+        progress = ease_in_out_cubic(progress);
         for (size_t i = 0; i < draw_buffer_size; i++) {
             output_buffer[i] = gfx_lerp_color(previous_buffer[i], draw_buffer[i], progress);
         }
@@ -99,6 +125,8 @@ esp_err_t gfx_init()
         .flags.with_dma = false,
     };
 
+    set_is_transitioning(false);
+
     ESP_RETURN_ON_ERROR(led_strip_new_rmt_device(&strip_config, &rmt_config, &led_strip_handle), TAG, "Failed to create LED strip handle");
 
     // test led strip
@@ -148,6 +176,9 @@ esp_err_t gfx_init()
 
     ESP_RETURN_ON_ERROR(esp_timer_start_periodic(draw_loop_timer_handle, 1000000 / CONFIG_LED_STRIP_FPS), TAG, "Failed to start draw loop timer");
 
+    //gfx_set_rgb(0, 255, 0, 255);
+    //gfx_start_transition();
+
     return ESP_OK;
 }
 
@@ -180,7 +211,7 @@ esp_err_t gfx_start_transition()
     memccpy(previous_buffer, output_buffer, output_buffer_size, sizeof(uint32_t));
 
     transition_start_time = esp_timer_get_time();
-    is_transitioning = true;
+    set_is_transitioning(true);
 
     return ESP_OK;
 }

@@ -88,6 +88,26 @@ esp_err_t config_manager_set_i32(const char *namespace, const char *key, int32_t
 esp_err_t config_manager_get_i32(const char *namespace, const char *key, int32_t *out);
 
 /**
+ * @brief set uint32_t value in namespace
+ * 
+ * @param namespace namespace to store value in
+ * @param key key to store value under
+ * @param value value to store
+ * @return esp_err_t 
+ */
+esp_err_t config_manager_set_u32(const char *namespace, const char *key, uint32_t value);
+
+/**
+ * @brief get uint32_t value from namespace
+ * 
+ * @param namespace namespace to get value from
+ * @param key key to get value from
+ * @param out pointer to store value
+ * @return esp_err_t 
+ */
+esp_err_t config_manager_get_u32(const char *namespace, const char *key, uint32_t *out);
+
+/**
  * @brief set int64_t value in namespace
  * 
  * @param namespace namespace to store value in

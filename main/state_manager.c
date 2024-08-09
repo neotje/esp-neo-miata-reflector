@@ -125,7 +125,9 @@ esp_err_t state_manager_get(const char *key, void **out, size_t *out_size)
     ESP_RETURN_ON_ERROR(get_entry_by_key(key, &entry), TAG, "Failed to get state entry by key");
 
     *out = entry->value;
-    *out_size = entry->size;
+
+    if (out_size != NULL)
+        *out_size = entry->size;
 
     return ESP_OK;
 }

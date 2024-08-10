@@ -46,6 +46,27 @@ menu "esp-neo-miata-reflector"
                 The number of frames per second the LED strip should be updated with.
     endmenu
 
+    menu "stack manager modes"
+        menu "idle_mode"
+            config IDLE_MODE_ID
+                int "Idle mode id"
+                range 0 255
+                default 0
+        endmenu
+
+        menu "blinking_mode"
+            config BLINKING_MODE_ID
+                int "Blinking mode id"
+                range 0 255
+                default 1
+
+            config BLINKING_MODE_PRIO
+                int "Blinking mode priority"
+                range 0 255
+                default 2
+        endmenu
+    endmenu
+
     menu "tasks"
 
         menu "mode stack manager"

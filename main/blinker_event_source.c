@@ -288,3 +288,13 @@ esp_err_t blinker_event_source_set_sense_wire(int index)
 
     return ESP_OK;
 }
+
+int64_t blinker_event_source_get_on_duration()
+{
+    return on_duration;
+}
+
+int64_t blinker_event_source_get_off_duration()
+{
+    return off_duration;
+}

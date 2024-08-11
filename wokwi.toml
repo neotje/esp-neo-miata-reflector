@@ -2,3 +2,4 @@
 version = 1
 firmware = 'build/flasher_args.json'
 elf = 'build/esp-neo-miata-reflector.elf'
+gdbServerPort=3333

@@ -15,10 +15,18 @@
 
 static const char *TAG = "marker_app_main";
 
+static void idle_mode_enter()
+{
+    ESP_LOGI(TAG, "Entering idle mode");
+    gfx_clear();
+}
+
 stack_manager_mode_t idle_mode = {
     .id = 0,
     .name = "idle",
     .priority = IDLE_MODE_PRIORITY,
+    .mode_enter_func = &idle_mode_enter,
+    
 };
 
 static esp_console_repl_t *repl = NULL;

@@ -67,4 +67,6 @@ esp_err_t gfx_start_transition();
  */
 uint32_t gfx_lerp_color(uint32_t from, uint32_t to, float amount);
 
+size_t gfx_get_length();
+
 #endif

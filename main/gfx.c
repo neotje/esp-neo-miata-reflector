@@ -232,3 +232,7 @@ uint32_t gfx_lerp_color(uint32_t from, uint32_t to, float amount)
 
     return (r << 16) | (g << 8) | b;
 }
+
+size_t gfx_get_length() {
+    return output_buffer_size;
+}

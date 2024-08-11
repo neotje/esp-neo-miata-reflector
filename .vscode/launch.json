@@ -5,6 +5,16 @@
       "type": "espidf",
       "name": "Launch",
       "request": "launch"
+    },
+    {
+      "name": "Wokwi GDB",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/esp-neo-miata-reflector.elf",
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "${command:espIdf.getToolchainGdb}",
+      "miDebuggerServerAddress": "localhost:3333"
     }
   ]
 }

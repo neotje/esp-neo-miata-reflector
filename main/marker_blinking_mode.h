@@ -13,6 +13,8 @@
 
 #include "mode_stack_manager.h"
 #include "mode_event_linker.h"
+#include "blinker_event_source.h"
+#include "gfx.h"
 
 esp_err_t marker_blinking_mode_init();
 

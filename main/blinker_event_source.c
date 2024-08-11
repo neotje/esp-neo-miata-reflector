@@ -147,6 +147,7 @@ static struct {
 
 static int blinker_event_source_set_sense_wire_cmd(int argc, char **argv)
 {
+    esp_err_t err;
     int nerrors = arg_parse(argc, argv, (void **)&set_sense_wire_args);
 
     if (nerrors != 0)
@@ -157,13 +158,13 @@ static int blinker_event_source_set_sense_wire_cmd(int argc, char **argv)
 
     int index = set_sense_wire_args.index->ival[0];
 
-    esp_err_t err = blinker_event_source_set_sense_wire(index);
+    //esp_err_t err = blinker_event_source_set_sense_wire(index);
 
-    if (err != ESP_OK)
-    {
-        printf("\n");
-        return 1;
-    }
+    //if (err != ESP_OK)
+    //{
+    //    printf("\n");
+    //    return 1;
+    //}
 
     err = config_manager_set_u8(NAMESPACE, SENSE_WIRE_INDEX_KEY, index);
 
@@ -207,7 +208,7 @@ static int blinker_event_source_get_blinker_cmd(int argc, char **argv)
         arg_print_errors(stderr, get_blinker_args.end, argv[0]);
         return ESP_ERR_INVALID_ARG;
     }
-
+    
     printf("On duration: %lld ms\n", on_duration / 1000);
     printf("Off duration: %lld ms\n", off_duration / 1000);
     printf("Timer offset: %lld\n", timer_offset);
@@ -267,6 +268,11 @@ esp_err_t blinker_event_source_init()
 
 esp_err_t blinker_event_source_set_sense_wire(int index)
 {
+    if (index == current_sense_wire_index)
+    {
+        return ESP_OK;
+    }
+
     if (index == 0 && current_sense_wire_index != 0)
     {
         // deinit event handlers

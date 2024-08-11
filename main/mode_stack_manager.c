@@ -195,6 +195,12 @@ esp_err_t mode_stack_manager_exit_mode(uint8_t id)
             stack_size--;
             stack = temp;
 
+            stack_manager_mode_t* current_mode;
+            if(mode_stack_manager_get_current_mode(&current_mode) == ESP_OK && current_mode->mode_enter_func != NULL)
+            {
+                current_mode->mode_enter_func();
+            }
+
             return ESP_OK;
         }
     }

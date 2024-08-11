@@ -11,6 +11,7 @@
 #include "blinker_event_source.h"
 #include "gfx.h"
 #include "marker_blinking_mode.h"
+#include "blinker_emulator.h"
 
 static const char *TAG = "marker_app_main";
 
@@ -90,6 +91,8 @@ void app_main(void)
     ESP_ERROR_CHECK(blinker_event_source_init());
 
     ESP_ERROR_CHECK(gfx_init());
+
+    ESP_ERROR_CHECK(blinker_emulator_init());
 
     ESP_ERROR_CHECK(start_console());
 }

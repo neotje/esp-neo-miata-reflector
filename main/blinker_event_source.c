@@ -120,9 +120,13 @@ esp_err_t register_wire(uint8_t index)
 
 void calculateOffDuration()
 {
-    if (last_off_time != -1 && last_on_time != -1 && last_on_time > last_off_time)
+    int64_t diff = last_on_time - last_off_time - off_duration;
+    int64_t new_off = last_on_time - last_off_time;
+
+    if (last_off_time != -1 && last_on_time != -1 && last_on_time > last_off_time && (llabs(diff) < 200000 || off_duration == -1))
     {
-        off_duration = last_on_time - last_off_time;
+        off_duration = new_off;
+
         state_manager_set(OFF_DURATION_KEY, &off_duration, sizeof(off_duration));
         config_manager_set_i64(NAMESPACE, OFF_DURATION_KEY, off_duration);
         ESP_LOGI(TAG, "Off duration: %lld", off_duration / 1000);

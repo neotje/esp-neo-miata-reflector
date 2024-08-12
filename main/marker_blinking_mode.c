@@ -4,11 +4,15 @@
 PRIVATE
 */
 static const char* TAG = "marker_blinking_mode";
+static const char* NAMESPACE = "blinker";
+static const char* ON_COLOR_KEY = "color";
 
 int64_t previous_blink_time = 0;
 bool is_blinker_on = false;
 uint32_t current_color = 0;
 uint32_t target_color = 0;
+
+uint32_t on_color = 0xff6600;
 
 esp_event_handler_instance_t blinking_event_handler_instance;
 
@@ -28,6 +32,19 @@ static void marker_blinking_event_handler(void *handler_args, esp_event_base_t b
     {
         start_blink();
     }
+}
+
+static void marker_blinking_config_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
+{
+    config_manager_event_update_t *update = (config_manager_event_update_t *)event_data;
+
+    if (strcmp(update->namespace, NAMESPACE) == 0 && id == CONFIG_MANAGER_EVENT_UPDATE)
+    {
+        if (strcmp(update->key, ON_COLOR_KEY) == 0)
+        {
+            config_manager_get_u32(NAMESPACE, ON_COLOR_KEY, &on_color);
+        }
+    } 
 }
 
 static void marker_blinking_mode_enter()
@@ -59,7 +76,7 @@ static void marker_blinking_mode_function()
         }
         else
         {
-            target_color = 0xff6600;
+            target_color = on_color;
         }
 
         is_blinker_on = !is_blinker_on;
@@ -98,6 +115,9 @@ esp_err_t marker_blinking_mode_init()
     ESP_RETURN_ON_ERROR(mode_stack_manager_add_mode(&marker_blinking_mode), TAG, "Failed to add marker_blinking_mode");
 
     ESP_RETURN_ON_ERROR(mode_event_linker_register_handler(MARKER_EVENT_TURN_SIGNAL_ON, marker_blinking_event_handler, NULL, &blinking_event_handler_instance), TAG, "Failed to register handler for MARKER_EVENT_TURN_SIGNAL_ON");
+
+    config_manager_get_u32(NAMESPACE, ON_COLOR_KEY, &on_color);
+    ESP_RETURN_ON_ERROR(config_manager_register_update_handler(marker_blinking_config_handler, NULL), TAG, "Failed to register update handler");
 
     mode_event_linker_add(CONFIG_BLINKING_MODE_ID, MARKER_EVENT_TURN_SIGNAL_ON, ENTER_ACTION);
     mode_event_linker_add(CONFIG_BLINKING_MODE_ID, MARKER_EVENT_TURN_SIGNAL_OFF, EXIT_ACTION);

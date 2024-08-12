@@ -46,6 +46,15 @@ menu "esp-neo-miata-reflector"
                 The number of frames per second the LED strip should be updated with.
     endmenu
 
+    menu "blinker event source"
+        config BLINKER_EVENT_SOURCE_MAX_OFF_TIME_DIFF_MS
+            int "Max off time difference"
+            range 0 10000
+            default 200
+            help 
+                The maximum difference between the off time of the current and the previous blinking mode.
+    endmenu
+
     menu "stack manager modes"
         menu "idle_mode"
             config IDLE_MODE_ID

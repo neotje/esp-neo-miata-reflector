@@ -123,7 +123,7 @@ void calculateOffDuration()
     int64_t diff = last_on_time - last_off_time - off_duration;
     int64_t new_off = last_on_time - last_off_time;
 
-    if (last_off_time != -1 && last_on_time != -1 && last_on_time > last_off_time && (llabs(diff) < 200000 || off_duration == -1))
+    if (last_off_time != -1 && last_on_time != -1 && last_on_time > last_off_time && (llabs(diff) < CONFIG_BLINKER_EVENT_SOURCE_MAX_OFF_TIME_DIFF_MS * 1000 || off_duration == -1))
     {
         off_duration = new_off;
 
@@ -144,7 +144,8 @@ void calculateOnDuration()
     }
 }
 
-static struct {
+static struct
+{
     struct arg_int *index;
     struct arg_end *end;
 } set_sense_wire_args;
@@ -162,13 +163,13 @@ static int blinker_event_source_set_sense_wire_cmd(int argc, char **argv)
 
     int index = set_sense_wire_args.index->ival[0];
 
-    //esp_err_t err = blinker_event_source_set_sense_wire(index);
+    // esp_err_t err = blinker_event_source_set_sense_wire(index);
 
-    //if (err != ESP_OK)
+    // if (err != ESP_OK)
     //{
-    //    printf("\n");
-    //    return 1;
-    //}
+    //     printf("\n");
+    //     return 1;
+    // }
 
     err = config_manager_set_u8(NAMESPACE, SENSE_WIRE_INDEX_KEY, index);
 
@@ -191,15 +192,15 @@ static esp_err_t blinker_event_source_register_set_sense_wire()
         .help = "Set the sense wire index for the blinker",
         .hint = NULL,
         .func = &blinker_event_source_set_sense_wire_cmd,
-        .argtable = &set_sense_wire_args
-    };
+        .argtable = &set_sense_wire_args};
 
     ESP_RETURN_ON_ERROR(esp_console_cmd_register(&cmd), TAG, "Failed to register set_sense_wire command");
 
     return ESP_OK;
 }
 
-static struct {
+static struct
+{
     struct arg_end *end;
 } get_blinker_args;
 
@@ -212,7 +213,7 @@ static int blinker_event_source_get_blinker_cmd(int argc, char **argv)
         arg_print_errors(stderr, get_blinker_args.end, argv[0]);
         return ESP_ERR_INVALID_ARG;
     }
-    
+
     printf("On duration: %lld ms\n", on_duration / 1000);
     printf("Off duration: %lld ms\n", off_duration / 1000);
     printf("Timer offset: %lld\n", timer_offset);
@@ -230,13 +231,11 @@ static esp_err_t blinker_event_source_register_get_blinker()
         .help = "Get the blinker configuration/measured values",
         .hint = NULL,
         .func = &blinker_event_source_get_blinker_cmd,
-        .argtable = &get_blinker_args
-    };
+        .argtable = &get_blinker_args};
 
     ESP_RETURN_ON_ERROR(esp_console_cmd_register(&cmd), TAG, "Failed to register get_blinker command");
 
     return ESP_OK;
-
 }
 
 /*

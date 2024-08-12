@@ -10,13 +10,30 @@ bool is_blinker_on = false;
 uint32_t current_color = 0;
 uint32_t target_color = 0;
 
-static void marker_blinking_mode_enter()
+esp_event_handler_instance_t blinking_event_handler_instance;
+
+void start_blink()
 {
-    ESP_LOGI(TAG, "Entering marker_blinking_mode");
     previous_blink_time = esp_timer_get_time();
     is_blinker_on = true;
     current_color = 0xff6600;
     target_color = current_color;
+}
+
+static void marker_blinking_event_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
+{
+    ESP_LOGI(TAG, "Received event %li", id);
+
+    if (id == MARKER_EVENT_TURN_SIGNAL_ON)
+    {
+        start_blink();
+    }
+}
+
+static void marker_blinking_mode_enter()
+{
+    ESP_LOGI(TAG, "Entering marker_blinking_mode");
+    start_blink();
 }
 
 static void marker_blinking_mode_function()
@@ -79,6 +96,8 @@ esp_err_t marker_blinking_mode_init()
     ESP_LOGI(TAG, "Initializing marker_blinking_mode");
 
     ESP_RETURN_ON_ERROR(mode_stack_manager_add_mode(&marker_blinking_mode), TAG, "Failed to add marker_blinking_mode");
+
+    ESP_RETURN_ON_ERROR(mode_event_linker_register_handler(MARKER_EVENT_TURN_SIGNAL_ON, marker_blinking_event_handler, NULL, &blinking_event_handler_instance), TAG, "Failed to register handler for MARKER_EVENT_TURN_SIGNAL_ON");
 
     mode_event_linker_add(CONFIG_BLINKING_MODE_ID, MARKER_EVENT_TURN_SIGNAL_ON, ENTER_ACTION);
     mode_event_linker_add(CONFIG_BLINKING_MODE_ID, MARKER_EVENT_TURN_SIGNAL_OFF, EXIT_ACTION);

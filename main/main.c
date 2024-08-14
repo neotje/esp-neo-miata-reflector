@@ -88,6 +88,8 @@ void app_main(void)
 
     ESP_ERROR_CHECK(state_manager_init());
 
+    ESP_ERROR_CHECK(gfx_init());
+
     ESP_ERROR_CHECK(mode_stack_manager_init(&idle_mode));
 
     ESP_ERROR_CHECK(mode_event_linker_init());
@@ -97,8 +99,6 @@ void app_main(void)
     ESP_ERROR_CHECK(sense_wire_event_source_init());
 
     ESP_ERROR_CHECK(blinker_event_source_init());
-
-    ESP_ERROR_CHECK(gfx_init());
 
     ESP_ERROR_CHECK(blinker_emulator_init());
 

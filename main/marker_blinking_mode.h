@@ -16,6 +16,11 @@
 #include "blinker_event_source.h"
 #include "gfx.h"
 
+typedef enum {
+    BLINKING_STYLE_BLINK,
+    BLINKING_STYLE_SEQUENTIAL,
+} blinking_style_t;
+
 esp_err_t marker_blinking_mode_init();
 
 #endif // MARKER_BLINKING_MODE_H

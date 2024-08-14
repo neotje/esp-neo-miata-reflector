@@ -20,6 +20,7 @@ offDuration,data,i64,-1
 timerOffset,data,i64,0
 sense,data,u8,0
 color,data,u32,16737792
+style,data,u8,0
 sense,namespace,,
 threshold1,data,i32,100
 threshold2,data,i32,100

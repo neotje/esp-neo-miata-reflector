@@ -57,6 +57,8 @@ void sequential_loop(int64_t current_time, int64_t timeout) {
     {
         double progress = (current_time - previous_blink_time) / (double)timeout;
 
+        progress = gfx_ease_in_out_cubic(progress);
+
         gfx_draw_linef(on_color, 0, progress * gfx_get_length());
     }
     else

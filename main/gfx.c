@@ -220,7 +220,7 @@ esp_err_t gfx_start_transition()
     return ESP_OK;
 }
 
-uint32_t gfx_lerp_color(uint32_t from, uint32_t to, float amount)
+uint32_t gfx_lerp_color(uint32_t from, uint32_t to, double amount)
 {
     uint8_t from_r = (from >> 16) & 0xFF;
     uint8_t from_g = (from >> 8) & 0xFF;
@@ -230,9 +230,9 @@ uint32_t gfx_lerp_color(uint32_t from, uint32_t to, float amount)
     uint8_t to_g = (to >> 8) & 0xFF;
     uint8_t to_b = to & 0xFF;
 
-    uint8_t r = from_r + (to_r - from_r) * amount;
-    uint8_t g = from_g + (to_g - from_g) * amount;
-    uint8_t b = from_b + (to_b - from_b) * amount;
+    uint8_t r = round(from_r + (to_r - from_r) * amount);
+    uint8_t g = round(from_g + (to_g - from_g) * amount);
+    uint8_t b = round(from_b + (to_b - from_b) * amount);
 
     return (r << 16) | (g << 8) | b;
 }
@@ -253,7 +253,7 @@ void gfx_draw_linef(uint32_t color, double start, double length)
 
     if (remaining > 0.0)
     {
-        uint32_t color_first_pixel = gfx_lerp_color(0, color, brightness_first_pixel);
+        uint32_t color_first_pixel = gfx_rgb_set_brightness(color, brightness_first_pixel);
         gfx_set(position++, color_first_pixel);
         remaining -= brightness_first_pixel;
     }
@@ -267,10 +267,23 @@ void gfx_draw_linef(uint32_t color, double start, double length)
 
     if (remaining > 0.0)
     {
-        uint32_t color_last_pixel = gfx_lerp_color(0, color, length);
+        uint32_t color_last_pixel = gfx_rgb_set_brightness(color, remaining);
         gfx_set(position, color_last_pixel);
     }
 
+}
+
+uint32_t gfx_rgb_set_brightness(uint32_t color, double brightness)
+{
+    uint8_t r = (color >> 16) & 0xFF;
+    uint8_t g = (color >> 8) & 0xFF;
+    uint8_t b = color & 0xFF;
+
+    r = round(r * brightness);
+    g = round(g * brightness);
+    b = round(b * brightness);
+
+    return (r << 16) | (g << 8) | b;
 }
 
 size_t gfx_get_length() {

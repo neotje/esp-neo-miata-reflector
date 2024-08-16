@@ -74,6 +74,8 @@ void gfx_draw_line(uint32_t color, size_t start, size_t end);
 
 void gfx_draw_linef(uint32_t color, double start, double length);
 
+uint32_t gfx_rgb_set_brightness(uint32_t color, double brightness);
+
 size_t gfx_get_length();
 
 #endif

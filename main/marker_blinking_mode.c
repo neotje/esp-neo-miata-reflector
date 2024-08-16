@@ -99,7 +99,7 @@ static void marker_blinking_event_handler(void *handler_args, esp_event_base_t b
 
     if (id == MARKER_EVENT_TURN_SIGNAL_ON)
     {
-        start_blink();
+        get_start_function(style)();
     }
 }
 

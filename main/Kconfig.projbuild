@@ -63,6 +63,18 @@ menu "esp-neo-miata-reflector"
                 default 0
         endmenu
 
+        menu "daytime_running_mode"
+            config DAYTIME_RUNNING_MODE_ID
+                int "Daytime running mode id"
+                range 0 255
+                default 2
+
+            config DAYTIME_RUNNING_MODE_PRIO
+                int "Daytime running mode priority"
+                range 0 255
+                default 1
+        endmenu
+
         menu "blinking_mode"
             config BLINKING_MODE_ID
                 int "Blinking mode id"

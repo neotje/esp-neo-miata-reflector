@@ -27,7 +27,7 @@ led_strip_handle_t led_strip_handle = NULL;
 
 esp_timer_handle_t draw_loop_timer_handle = NULL;
 
-float ease_in_out_cubic(float t) {
+double gfx_ease_in_out_cubic(double t) {
     return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
 }
 

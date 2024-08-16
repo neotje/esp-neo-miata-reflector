@@ -66,7 +66,9 @@ esp_err_t gfx_start_transition();
  * @param amount 
  * @return uint32_t 
  */
-uint32_t gfx_lerp_color(uint32_t from, uint32_t to, float amount);
+uint32_t gfx_lerp_color(uint32_t from, uint32_t to, double amount);
+
+double gfx_ease_in_out_cubic(double t);
 
 void gfx_draw_line(uint32_t color, size_t start, size_t end);
 

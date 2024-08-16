@@ -240,7 +240,7 @@ uint32_t gfx_lerp_color(uint32_t from, uint32_t to, double amount)
 void gfx_draw_line(uint32_t color, size_t start, size_t end)
 {
     // clip start and end
-    for (size_t i = start; i <= end; i++) {
+    for (size_t i = start; i < end; i++) {
         gfx_set(i, color);
     }
 }

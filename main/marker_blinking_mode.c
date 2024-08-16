@@ -166,6 +166,69 @@ stack_manager_mode_t marker_blinking_mode = {
     .mode_exit_func = &marker_blinking_mode_exit,
 };
 
+static struct {
+    struct arg_str *cmd;
+    struct arg_str *action;
+    struct arg_int *value;
+    struct arg_end *end;
+} blinker_cmd_args;
+
+static int blinker_cmd_trigger(int argc, char **argv){
+    int nerrors = arg_parse(argc, argv, (void **)&blinker_cmd_args);
+
+    if (nerrors != 0)
+    {
+        arg_print_errors(stderr, blinker_cmd_args.end, argv[0]);
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    if (strcmp(blinker_cmd_args.cmd->sval[0], "style") == 0)
+    {
+        if (strcmp(blinker_cmd_args.action->sval[0], "set") == 0)
+        {
+            config_manager_set_u32(NAMESPACE, STYLE_KEY, (uint32_t)blinker_cmd_args.value->ival[0]);
+        }
+        else if (strcmp(blinker_cmd_args.action->sval[0], "get") == 0)
+        {
+            ESP_LOGI(TAG, "Current style: %i - %s", style, BLINKING_STYLE_TO_STRING(style));
+        }
+    }
+    else if (strcmp(blinker_cmd_args.cmd->sval[0], "color") == 0)
+    {
+        if (strcmp(blinker_cmd_args.action->sval[0], "set") == 0)
+        {
+            config_manager_set_u32(NAMESPACE, ON_COLOR_KEY, (uint32_t)blinker_cmd_args.value->ival[0]);
+        }
+        else if (strcmp(blinker_cmd_args.action->sval[0], "get") == 0)
+        {
+            // print color as hex
+            ESP_LOGI(TAG, "Current color: 0x%06lx", on_color);
+        }
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t marker_blinking_mode_register_blinker_cmd()
+{
+    blinker_cmd_args.cmd = arg_str1(NULL, NULL, "<cmd>", "Command to execute: style or color");
+    blinker_cmd_args.action = arg_str1(NULL, NULL, "<action>", "Action to execute: set or get");
+    blinker_cmd_args.value = arg_int0(NULL, NULL, "<value>", "Value to set (only for set action)");
+    blinker_cmd_args.end = arg_end(1);
+
+    const esp_console_cmd_t blinker_cmd = {
+        .command = "blinker",
+        .help = "Blinker command",
+        .hint = NULL,
+        .func = &blinker_cmd_trigger,
+        .argtable = &blinker_cmd_args,
+    };
+
+    ESP_RETURN_ON_ERROR(esp_console_cmd_register(&blinker_cmd), TAG, "Failed to register blinker command");
+
+    return ESP_OK;
+}
+
 /*
 PUBLIC
 */
@@ -188,6 +251,8 @@ esp_err_t marker_blinking_mode_init()
 
     mode_event_linker_add(CONFIG_BLINKING_MODE_ID, MARKER_EVENT_TURN_SIGNAL_ON, ENTER_ACTION);
     mode_event_linker_add(CONFIG_BLINKING_MODE_ID, MARKER_EVENT_TURN_SIGNAL_OFF, EXIT_ACTION);
+
+    ESP_RETURN_ON_ERROR(marker_blinking_mode_register_blinker_cmd(), TAG, "Failed to register blinker command");
 
     return ESP_OK;
 }

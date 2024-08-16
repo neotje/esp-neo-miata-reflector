@@ -7,6 +7,7 @@
 #define GFX_H
 
 #include <stdint.h>
+#include <math.h>
 
 #include "esp_check.h"
 #include "esp_system.h"
@@ -65,6 +66,16 @@ esp_err_t gfx_start_transition();
  * @param amount 
  * @return uint32_t 
  */
-uint32_t gfx_lerp_color(uint32_t from, uint32_t to, float amount);
+uint32_t gfx_lerp_color(uint32_t from, uint32_t to, double amount);
+
+double gfx_ease_in_out_cubic(double t);
+
+void gfx_draw_line(uint32_t color, size_t start, size_t end);
+
+void gfx_draw_linef(uint32_t color, double start, double length);
+
+uint32_t gfx_rgb_set_brightness(uint32_t color, double brightness);
+
+size_t gfx_get_length();
 
 #endif

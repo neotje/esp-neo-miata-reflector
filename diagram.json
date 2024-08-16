@@ -24,7 +24,21 @@
     { "type": "wokwi-neopixel", "id": "rgb12", "top": 82.9, "left": -337, "attrs": {} },
     { "type": "wokwi-neopixel", "id": "rgb13", "top": 82.9, "left": -365.8, "attrs": {} },
     { "type": "wokwi-neopixel", "id": "rgb14", "top": 82.9, "left": -394.6, "attrs": {} },
-    { "type": "wokwi-neopixel", "id": "rgb15", "top": 82.9, "left": -423.4, "attrs": {} }
+    { "type": "wokwi-neopixel", "id": "rgb15", "top": 82.9, "left": -423.4, "attrs": {} },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot1",
+      "top": -139,
+      "left": -10.6,
+      "attrs": { "travelLength": "30" }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot2",
+      "top": -225.4,
+      "left": -10.6,
+      "attrs": { "travelLength": "30" }
+    }
   ],
   "connections": [
     [ "esp:TX", "$serialMonitor:RX", "", [] ],
@@ -73,7 +87,13 @@
     [ "rgb11:DOUT", "rgb12:DIN", "green", [ "h0" ] ],
     [ "rgb12:DOUT", "rgb13:DIN", "green", [ "h0" ] ],
     [ "rgb13:DOUT", "rgb14:DIN", "green", [ "h0" ] ],
-    [ "rgb14:DOUT", "rgb15:DIN", "green", [ "h0" ] ]
+    [ "rgb14:DOUT", "rgb15:DIN", "green", [ "h0" ] ],
+    [ "pot1:GND", "esp:GND.2", "black", [ "v0" ] ],
+    [ "pot1:SIG", "esp:6", "blue", [ "h0", "v143.2", "h28.8", "v28.8" ] ],
+    [ "pot1:VCC", "esp:3V3.1", "red", [ "h-9.6", "v144" ] ],
+    [ "pot2:GND", "pot1:GND", "black", [ "v0" ] ],
+    [ "pot2:VCC", "pot1:VCC", "red", [ "h-9.6", "v86.4" ] ],
+    [ "pot2:SIG", "esp:7", "violet", [ "h-19.2", "v220", "h57.6", "v48" ] ]
   ],
   "dependencies": {}
 }

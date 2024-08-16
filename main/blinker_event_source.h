@@ -35,4 +35,8 @@ esp_err_t blinker_event_source_init();
  */
 esp_err_t blinker_event_source_set_sense_wire(int index);
 
+int64_t blinker_event_source_get_on_duration();
+
+int64_t blinker_event_source_get_off_duration();
+
 #endif // BLINKER_EVENT_SOURCE_H

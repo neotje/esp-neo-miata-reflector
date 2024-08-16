@@ -12,14 +12,11 @@ static const char* TAG = "gfx";
 static const char *NAMESPACE = "gfx";
 static const char *TRANSITION_DURATION_KEY = "transition";
 
+static const size_t LED_COUNT = CONFIG_LED_STRIP_NUM_LEDS;
+
 uint32_t* output_buffer = NULL;
-size_t output_buffer_size = 0;
-
 uint32_t* previous_buffer = NULL;
-size_t previous_buffer_size = 0;
-
 uint32_t* draw_buffer = NULL;
-size_t draw_buffer_size = 0;
 
 int64_t transition_start_time = -1;
 uint32_t transition_duration = 0;
@@ -30,7 +27,7 @@ led_strip_handle_t led_strip_handle = NULL;
 
 esp_timer_handle_t draw_loop_timer_handle = NULL;
 
-float ease_in_out_cubic(float t) {
+double gfx_ease_in_out_cubic(double t) {
     return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
 }
 
@@ -61,7 +58,15 @@ void update_transition_duration() {
     }
 }
 
+double fps;
+int64_t previous_draw_time = 0;
+
 static void gfx_draw_loop(void* args) {
+    // calculate fps
+    int64_t current_time = esp_timer_get_time();
+    fps = 1.0 / ((current_time - previous_draw_time) / 1000000.0);
+    previous_draw_time = current_time;
+
     float progress = 0.0f;
     bool is_transitioning = get_is_transitioning();
 
@@ -74,15 +79,15 @@ static void gfx_draw_loop(void* args) {
     }
 
     if (is_transitioning) {
-        progress = ease_in_out_cubic(progress);
-        for (size_t i = 0; i < draw_buffer_size; i++) {
+        progress = gfx_ease_in_out_cubic(progress);
+        for (size_t i = 0; i < LED_COUNT; i++) {
             output_buffer[i] = gfx_lerp_color(previous_buffer[i], draw_buffer[i], progress);
         }
     } else {
-        memccpy(output_buffer, draw_buffer, draw_buffer_size, sizeof(uint32_t));
+        memcpy(output_buffer, draw_buffer, LED_COUNT * sizeof(uint32_t));
     }
 
-    for (size_t i = 0; i < output_buffer_size; i++) {
+    for (size_t i = 0; i < gfx_get_length(); i++) {
         if(led_strip_set_pixel(led_strip_handle, i, (output_buffer[i] >> 16) & 0xFF, (output_buffer[i] >> 8) & 0xFF, output_buffer[i] & 0xFF) != ESP_OK) {
             ESP_LOGW(TAG, "Failed to set pixel");
         }
@@ -128,6 +133,8 @@ esp_err_t gfx_init()
     set_is_transitioning(false);
 
     ESP_RETURN_ON_ERROR(led_strip_new_rmt_device(&strip_config, &rmt_config, &led_strip_handle), TAG, "Failed to create LED strip handle");
+    
+    //ESP_RETURN_ON_ERROR(led_strip_new_spi_device(&strip_config, &spi_config, &led_strip_handle), TAG, "Failed to create LED strip handle");
 
     // test led strip
     ESP_RETURN_ON_ERROR(led_strip_set_pixel(led_strip_handle, 0, 255, 0, 0), TAG, "Failed to set pixel");
@@ -135,31 +142,28 @@ esp_err_t gfx_init()
     ESP_RETURN_ON_ERROR(led_strip_clear(led_strip_handle), TAG, "Failed to clear LED strip");
 
     // allocate memory for buffers
-    output_buffer_size = CONFIG_LED_STRIP_NUM_LEDS;
-    output_buffer = (uint32_t*)malloc(output_buffer_size * sizeof(uint32_t));
+    output_buffer = (uint32_t*)malloc(LED_COUNT * sizeof(uint32_t));
     if (output_buffer == NULL) {
         ESP_LOGE(TAG, "Failed to allocate memory for output buffer");
         return ESP_ERR_NO_MEM;
     }
 
-    previous_buffer_size = CONFIG_LED_STRIP_NUM_LEDS;
-    previous_buffer = (uint32_t*)malloc(previous_buffer_size * sizeof(uint32_t));
+    previous_buffer = (uint32_t*)malloc(LED_COUNT * sizeof(uint32_t));
     if (previous_buffer == NULL) {
         ESP_LOGE(TAG, "Failed to allocate memory for previous buffer");
         return ESP_ERR_NO_MEM;
     }
 
-    draw_buffer_size = CONFIG_LED_STRIP_NUM_LEDS;
-    draw_buffer = (uint32_t*)malloc(draw_buffer_size * sizeof(uint32_t));
+    draw_buffer = (uint32_t*)malloc(LED_COUNT * sizeof(uint32_t));
     if (draw_buffer == NULL) {
         ESP_LOGE(TAG, "Failed to allocate memory for draw buffer");
         return ESP_ERR_NO_MEM;
     }
 
     // clear buffers
-    memset(output_buffer, 0, output_buffer_size * sizeof(uint32_t));
-    memset(previous_buffer, 0, previous_buffer_size * sizeof(uint32_t));
-    memset(draw_buffer, 0, draw_buffer_size * sizeof(uint32_t));
+    memset(output_buffer, 0, LED_COUNT * sizeof(uint32_t));
+    memset(previous_buffer, 0, LED_COUNT * sizeof(uint32_t));
+    memset(draw_buffer, 0, LED_COUNT * sizeof(uint32_t));
 
     ESP_RETURN_ON_ERROR(config_manager_register_update_handler(gfx_config_update_handler, NULL), TAG, "Failed to register config update handler");
 
@@ -184,7 +188,7 @@ esp_err_t gfx_init()
 
 esp_err_t gfx_set(size_t index, uint32_t color)
 {
-    if (index >= draw_buffer_size) {
+    if (index >= gfx_get_length()) {
         ESP_LOGW(TAG, "Index out of bounds");
         return ESP_ERR_INVALID_ARG;
     }
@@ -201,14 +205,14 @@ esp_err_t gfx_set_rgb(size_t index, uint8_t r, uint8_t g, uint8_t b)
 
 esp_err_t gfx_clear()
 {
-    memset(draw_buffer, 0, draw_buffer_size * sizeof(uint32_t));
+    memset(draw_buffer, 0, gfx_get_length() * sizeof(uint32_t));
 
     return ESP_OK;
 }
 
 esp_err_t gfx_start_transition()
 {
-    memccpy(previous_buffer, output_buffer, output_buffer_size, sizeof(uint32_t));
+    memccpy(previous_buffer, output_buffer, LED_COUNT, sizeof(uint32_t));
 
     transition_start_time = esp_timer_get_time();
     set_is_transitioning(true);
@@ -216,7 +220,7 @@ esp_err_t gfx_start_transition()
     return ESP_OK;
 }
 
-uint32_t gfx_lerp_color(uint32_t from, uint32_t to, float amount)
+uint32_t gfx_lerp_color(uint32_t from, uint32_t to, double amount)
 {
     uint8_t from_r = (from >> 16) & 0xFF;
     uint8_t from_g = (from >> 8) & 0xFF;
@@ -226,9 +230,62 @@ uint32_t gfx_lerp_color(uint32_t from, uint32_t to, float amount)
     uint8_t to_g = (to >> 8) & 0xFF;
     uint8_t to_b = to & 0xFF;
 
-    uint8_t r = from_r + (to_r - from_r) * amount;
-    uint8_t g = from_g + (to_g - from_g) * amount;
-    uint8_t b = from_b + (to_b - from_b) * amount;
+    uint8_t r = round(from_r + (to_r - from_r) * amount);
+    uint8_t g = round(from_g + (to_g - from_g) * amount);
+    uint8_t b = round(from_b + (to_b - from_b) * amount);
 
     return (r << 16) | (g << 8) | b;
+}
+
+void gfx_draw_line(uint32_t color, size_t start, size_t end)
+{
+    // clip start and end
+    for (size_t i = start; i <= end; i++) {
+        gfx_set(i, color);
+    }
+}
+
+void gfx_draw_linef(uint32_t color, double start, double length)
+{
+    double brightness_first_pixel = fmin(1.0 - (start - (long)start), length);
+    double remaining = fmin(length, gfx_get_length() - start);
+    size_t position = (size_t)start;
+
+    if (remaining > 0.0)
+    {
+        uint32_t color_first_pixel = gfx_rgb_set_brightness(color, brightness_first_pixel);
+        gfx_set(position++, color_first_pixel);
+        remaining -= brightness_first_pixel;
+    }
+
+
+    while (remaining >= 1.0)
+    {
+        gfx_set(position++, color);
+        remaining--;
+    }
+
+    if (remaining > 0.0)
+    {
+        uint32_t color_last_pixel = gfx_rgb_set_brightness(color, remaining);
+        gfx_set(position, color_last_pixel);
+    }
+
+}
+
+uint32_t gfx_rgb_set_brightness(uint32_t color, double brightness)
+{
+    uint8_t r = (color >> 16) & 0xFF;
+    uint8_t g = (color >> 8) & 0xFF;
+    uint8_t b = color & 0xFF;
+
+    r = round(r * brightness);
+    g = round(g * brightness);
+    b = round(b * brightness);
+
+    return (r << 16) | (g << 8) | b;
+}
+
+size_t gfx_get_length() {
+    return LED_COUNT;
 }

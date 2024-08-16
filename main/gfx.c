@@ -84,7 +84,7 @@ static void gfx_draw_loop(void* args) {
             output_buffer[i] = gfx_lerp_color(previous_buffer[i], draw_buffer[i], progress);
         }
     } else {
-        memccpy(output_buffer, draw_buffer, LED_COUNT, sizeof(uint32_t));
+        memcpy(output_buffer, draw_buffer, LED_COUNT * sizeof(uint32_t));
     }
 
     for (size_t i = 0; i < gfx_get_length(); i++) {

@@ -177,8 +177,12 @@ esp_err_t marker_blinking_mode_init()
 
     ESP_RETURN_ON_ERROR(mode_event_linker_register_handler(MARKER_EVENT_TURN_SIGNAL_ON, marker_blinking_event_handler, NULL, &blinking_event_handler_instance), TAG, "Failed to register handler for MARKER_EVENT_TURN_SIGNAL_ON");
 
-    config_manager_get_u32(NAMESPACE, ON_COLOR_KEY, &on_color);
-    config_manager_get_u32(NAMESPACE, STYLE_KEY, (uint32_t *)&style);
+    if(config_manager_get_u32(NAMESPACE, ON_COLOR_KEY, &on_color) != ESP_OK){
+        ESP_LOGW(TAG, "Failed to get on color");
+    }
+    if(config_manager_get_u32(NAMESPACE, STYLE_KEY, (uint32_t *)&style) != ESP_OK){
+        ESP_LOGW(TAG, "Failed to get style");
+    }
 
     ESP_RETURN_ON_ERROR(config_manager_register_update_handler(marker_blinking_config_handler, NULL), TAG, "Failed to register update handler");
 

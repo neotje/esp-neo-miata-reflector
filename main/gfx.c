@@ -79,7 +79,7 @@ static void gfx_draw_loop(void* args) {
     }
 
     if (is_transitioning) {
-        progress = ease_in_out_cubic(progress);
+        progress = gfx_ease_in_out_cubic(progress);
         for (size_t i = 0; i < LED_COUNT; i++) {
             output_buffer[i] = gfx_lerp_color(previous_buffer[i], draw_buffer[i], progress);
         }

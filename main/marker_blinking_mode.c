@@ -33,7 +33,7 @@ void start_sequential()
 {
     previous_blink_time = esp_timer_get_time();
     is_blinker_on = true;
-    gfx_draw_line(0, 0, gfx_get_length() - 1);
+    gfx_draw_line(0, 0, gfx_get_length());
 }
 
 void blink_loop(int64_t current_time, int64_t timeout)
@@ -49,7 +49,7 @@ void blink_loop(int64_t current_time, int64_t timeout)
 
     //current_color = gfx_lerp_color(current_color, target_color, loop_dt / (timeout / 1000000.0));
     current_color = target_color;
-    gfx_draw_line(current_color, 0, gfx_get_length() - 1);
+    gfx_draw_line(current_color, 0, gfx_get_length());
 }
 
 void sequential_loop(int64_t current_time, int64_t timeout) {
@@ -63,7 +63,7 @@ void sequential_loop(int64_t current_time, int64_t timeout) {
     }
     else
     {
-        gfx_draw_line(0, 0, gfx_get_length() - 1);
+        gfx_draw_line(0, 0, gfx_get_length());
     }    
 }
 
@@ -214,7 +214,7 @@ esp_err_t marker_blinking_mode_register_blinker_cmd()
     blinker_cmd_args.cmd = arg_str1(NULL, NULL, "<cmd>", "Command to execute: style or color");
     blinker_cmd_args.action = arg_str1(NULL, NULL, "<action>", "Action to execute: set or get");
     blinker_cmd_args.value = arg_int0(NULL, NULL, "<value>", "Value to set (only for set action)");
-    blinker_cmd_args.end = arg_end(1);
+    blinker_cmd_args.end = arg_end(3);
 
     const esp_console_cmd_t blinker_cmd = {
         .command = "blinker",

@@ -12,12 +12,14 @@
 #include "gfx.h"
 #include "marker_blinking_mode.h"
 #include "blinker_emulator.h"
+#include "daytime_running_mode.h"
 
 static const char *TAG = "marker_app_main";
 
 static void idle_mode_enter()
 {
     ESP_LOGI(TAG, "Entering idle mode");
+    gfx_start_transition();
     gfx_clear();
 }
 
@@ -95,6 +97,8 @@ void app_main(void)
     ESP_ERROR_CHECK(mode_event_linker_init());
 
     ESP_ERROR_CHECK(marker_blinking_mode_init());
+
+    ESP_ERROR_CHECK(daytime_running_mode_init());
 
     ESP_ERROR_CHECK(sense_wire_event_source_init());
 

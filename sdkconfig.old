@@ -498,12 +498,12 @@ CONFIG_ESPTOOLPY_MONITOR_BAUD=115200
 #
 # Partition Table
 #
-CONFIG_PARTITION_TABLE_SINGLE_APP=y
+# CONFIG_PARTITION_TABLE_SINGLE_APP is not set
 # CONFIG_PARTITION_TABLE_SINGLE_APP_LARGE is not set
 # CONFIG_PARTITION_TABLE_TWO_OTA is not set
-# CONFIG_PARTITION_TABLE_CUSTOM is not set
+CONFIG_PARTITION_TABLE_CUSTOM=y
 CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
-CONFIG_PARTITION_TABLE_FILENAME="partitions_singleapp.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"
 CONFIG_PARTITION_TABLE_OFFSET=0x8000
 CONFIG_PARTITION_TABLE_MD5=y
 # end of Partition Table
@@ -526,16 +526,83 @@ CONFIG_BOARD_SENS2_PIN=7
 # end of pinout
 
 #
-# mode stack
+# led strip
 #
-CONFIG_MODE_LOOP_DELAY=16
-# end of mode stack
+CONFIG_LED_STRIP_NUM_LEDS=15
+CONFIG_LED_STRIP_FPS=30
+# end of led strip
+
+#
+# blinker event source
+#
+CONFIG_BLINKER_EVENT_SOURCE_MAX_OFF_TIME_DIFF_MS=200
+# end of blinker event source
+
+#
+# stack manager modes
+#
+
+#
+# idle_mode
+#
+CONFIG_IDLE_MODE_ID=0
+# end of idle_mode
+
+#
+# daytime_running_mode
+#
+CONFIG_DAYTIME_RUNNING_MODE_ID=2
+CONFIG_DAYTIME_RUNNING_MODE_PRIO=1
+# end of daytime_running_mode
+
+#
+# blinking_mode
+#
+CONFIG_BLINKING_MODE_ID=1
+CONFIG_BLINKING_MODE_PRIO=2
+# end of blinking_mode
+# end of stack manager modes
 
 #
 # tasks
 #
-CONFIG_MARKER_EVENT_LOOP_TASK_PRIORITY=2
-CONFIG_MODE_STACK_TASK_PRIORITY=1
+
+#
+# mode stack manager
+#
+CONFIG_MODE_STACK_MANAGER_TASK_PRIORITY=1
+CONFIG_MODE_STACK_MANAGER_TASK_STACK_SIZE=4096
+# end of mode stack manager
+
+#
+# state manager
+#
+CONFIG_STATE_MANAGER_EVENT_LOOP_PRIORITY=2
+CONFIG_STATE_MANAGER_EVENT_QUEUE_SIZE=10
+CONFIG_STATE_MANAGER_EVENT_LOOP_STACK_SIZE=4096
+# end of state manager
+
+#
+# config manager
+#
+CONFIG_CONFIG_MANAGER_EVENT_LOOP_PRIORITY=2
+CONFIG_CONFIG_MANAGER_EVENT_QUEUE_SIZE=10
+CONFIG_CONFIG_MANAGER_EVENT_LOOP_STACK_SIZE=4096
+# end of config manager
+
+#
+# mode event linker
+#
+CONFIG_MODE_EVENT_LINKER_EVENT_LOOP_PRIORITY=0
+CONFIG_MODE_EVENT_LINKER_EVENT_QUEUE_SIZE=10
+CONFIG_MODE_EVENT_LINKER_EVENT_LOOP_STACK_SIZE=4096
+# end of mode event linker
+
+#
+# sense wire event source
+#
+CONFIG_SENSE_WIRE_EVENT_SOURCE_TIMER_INTERVAL_MS=5
+# end of sense wire event source
 # end of tasks
 # end of esp-neo-miata-reflector
 

@@ -212,7 +212,7 @@ esp_err_t gfx_clear()
 
 esp_err_t gfx_start_transition()
 {
-    memccpy(previous_buffer, output_buffer, LED_COUNT, sizeof(uint32_t));
+    memcpy(previous_buffer, output_buffer, LED_COUNT * sizeof(uint32_t));
 
     transition_start_time = esp_timer_get_time();
     set_is_transitioning(true);
@@ -240,7 +240,7 @@ uint32_t gfx_lerp_color(uint32_t from, uint32_t to, double amount)
 void gfx_draw_line(uint32_t color, size_t start, size_t end)
 {
     // clip start and end
-    for (size_t i = start; i <= end; i++) {
+    for (size_t i = start; i < end; i++) {
         gfx_set(i, color);
     }
 }

@@ -212,7 +212,7 @@ esp_err_t gfx_clear()
 
 esp_err_t gfx_start_transition()
 {
-    memccpy(previous_buffer, output_buffer, LED_COUNT, sizeof(uint32_t));
+    memcpy(previous_buffer, output_buffer, LED_COUNT * sizeof(uint32_t));
 
     transition_start_time = esp_timer_get_time();
     set_is_transitioning(true);

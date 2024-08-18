@@ -17,3 +17,4 @@ debounce1,data,i32,30
 debounce2,data,i32,30
 gfx,namespace,,
 transition,data,u32,300
+brightness,data,u8,255

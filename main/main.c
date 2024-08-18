@@ -13,6 +13,7 @@
 #include "marker_blinking_mode.h"
 #include "blinker_emulator.h"
 #include "daytime_running_mode.h"
+#include "ble_interface.h"
 
 static const char *TAG = "marker_app_main";
 
@@ -105,6 +106,8 @@ void app_main(void)
     ESP_ERROR_CHECK(blinker_event_source_init());
 
     ESP_ERROR_CHECK(blinker_emulator_init());
+
+    ESP_ERROR_CHECK(ble_interface_init());
 
     ESP_ERROR_CHECK(start_console());
 }
